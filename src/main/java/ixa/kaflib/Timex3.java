@@ -1,11 +1,12 @@
 package ixa.kaflib;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /** The coreference layer creates clusters of term spans (which we call mentions) which share the same referent. For instance, “London” and “the capital city of England” are two mentions referring to the same entity. It is said that those mentions corefer. */
-public class Timex3 {
+public class Timex3 implements Serializable {
 
     /** Timex3's ID (required) */
     private String timex3id;

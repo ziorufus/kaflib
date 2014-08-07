@@ -5,6 +5,8 @@ import org.jdom2.IllegalDataException;
 import org.jdom2.Parent;
 import org.jdom2.Verifier;
 
+import java.io.Serializable;
+
 /**
  * An XML comment. Methods allow the user to get and set the text of the
  * comment.
@@ -12,7 +14,7 @@ import org.jdom2.Verifier;
  * @author  Brett McLaughlin
  * @author  Jason Hunter
  */
-public class Comment extends org.jdom2.Comment {
+public class Comment extends org.jdom2.Comment implements Serializable {
 
 	public Comment(String text) {
 		super();

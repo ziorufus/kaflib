@@ -1,5 +1,6 @@
 package ixa.kaflib;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * Factuality layer
  */
-public class Factuality {
+public class Factuality implements Serializable {
 
 	Term word;
 	ArrayList<FactualityPart> factualityParts = new ArrayList<FactualityPart>();
