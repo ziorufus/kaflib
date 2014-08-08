@@ -130,7 +130,7 @@ class AnnotationContainer implements Serializable {
 	chunks = new ArrayList();
 	entities = new ArrayList();
 	properties = new ArrayList();
-		sstSpans = new ArrayList<>();
+		sstSpans = new ArrayList();
 	categories = new ArrayList();
 	coreferences = new ArrayList();
 	timeExpressions = new ArrayList();
@@ -151,7 +151,7 @@ class AnnotationContainer implements Serializable {
 	corefsIndexedByTerm =  new HashMap<String, List<Coref>>();
 	timeExsIndexedByWF =  new HashMap<String, List<Timex3>>();
 	linkedEntitiesIndexedByWF =  new HashMap<String, List<LinkedEntity>>();
-		sstSpansIndexedByTerm = new HashMap<>();
+		sstSpansIndexedByTerm = new HashMap();
 	factsIndexedByWF = new HashMap<String, List<Factuality>>();
 	propertiesIndexedByTerm =  new HashMap<String, List<Feature>>();
 	categoriesIndexedByTerm =  new HashMap<String, List<Feature>>();
@@ -168,7 +168,7 @@ class AnnotationContainer implements Serializable {
 	corefsIndexedBySent = new HashMap<Integer, List<Coref>>();
 	timeExsIndexedBySent = new HashMap<Integer, List<Timex3>>();
 	linkedEntitiesIndexedBySent = new HashMap<Integer, List<LinkedEntity>>();
-		sstSpansIndexedBySent = new HashMap<>();
+		sstSpansIndexedBySent = new HashMap();
 	factsIndexedBySent =new HashMap<Integer, List<Factuality>>();
 	propertiesIndexedBySent = new HashMap<Integer, List<Feature>>();
 	categoriesIndexedBySent = new HashMap<Integer, List<Feature>>();
@@ -440,8 +440,10 @@ class AnnotationContainer implements Serializable {
     void add(Coref coref) {
 	coreferences.add(coref);
 	/* Index by terms */
-	for (Term term : coref.getTerms()) {
-	    indexAnnotation(coref, term.getId(), corefsIndexedByTerm);
+	for (Span<Term> span : coref.getSpans()) {
+        for (Term term : span.getTargets()) {
+            indexAnnotation(coref, term.getId(), corefsIndexedByTerm);
+        }
 	}
 	//this.indexBySent(coref, coref.getSpans().get(0).getTargets().get(0).getSent(), this.corefsIndexedBySent);
     }

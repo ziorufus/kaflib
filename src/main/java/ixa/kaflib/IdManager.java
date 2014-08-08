@@ -31,7 +31,7 @@ class IdManager implements Serializable {
 	public GenericId ssts = new GenericId("sst");
 	public GenericId topics = new GenericId("top");
 
-	private HashMap<String, Integer> componentCounter = new HashMap<>();
+	private HashMap<String, Integer> componentCounter = new HashMap();
 	boolean inconsistentIdComponent = false;
 	private static final String COMPONENT_PREFIX = ".";
 
