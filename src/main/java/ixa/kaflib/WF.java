@@ -1,6 +1,7 @@
 package ixa.kaflib;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 
 /** Class for representing word forms. These are the result of the tokenization process. */
@@ -152,4 +153,16 @@ public class WF implements Serializable {
 	public String toString() {
 		return this.getForm();
 	}
+	
+	// ADDED BY FRANCESCO
+	
+    public static final Comparator<WF> OFFSET_COMPARATOR = new Comparator<WF>() {
+      
+        @Override
+        public int compare(WF first, WF second) {
+            return first.getOffset() - second.getOffset();
+        }
+      
+    };
+    
 }

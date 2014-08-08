@@ -1,9 +1,11 @@
 package ixa.kaflib;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 
 /** Class for representing terms. Terms refer to previous word forms (and groups multi-words) and attach lemma, part of speech, synset and name entity information. */
@@ -351,15 +353,28 @@ public class Term implements Serializable {
 	this.termcase = termcase;
     }
 
+    // MODIFIED BY FRANCESCO
+    
     public String getForm() {
-	String str = "";
-	for (WF wf : span.getTargets()) {
-	    if (!str.isEmpty()) {
-		str += " ";
-	    }
-	    str += wf.getForm();
-	}
-	return str;
+        StringBuilder builder = new StringBuilder();
+        List<WF> sortedWFs = new ArrayList<WF>(span.getTargets());
+        Collections.sort(sortedWFs, WF.OFFSET_COMPARATOR);
+        int start = -1;
+        for (WF wf : sortedWFs){
+            if (start < 0) {
+                start = wf.getOffset();
+            }
+            int index = wf.getOffset() - start;
+            if (index < builder.length()) {
+                builder.setLength(index);
+            } else {
+                while (builder.length() < index) {
+                    builder.append(' ');
+                }
+            }
+            builder.append(wf.getForm());
+        }
+        return builder.toString();
     }
 
    public String getStr() {
@@ -481,4 +496,42 @@ public class Term implements Serializable {
     public Term getCompound() {
 	return this.compound;
     }
+
+    // ADDED BY FRANCESCO
+    
+    public int getOffset() {
+        int offset = Integer.MAX_VALUE;
+        for (WF word : this.getWFs()) {
+            int wordOffset = word.getOffset();
+            if (wordOffset < offset) {
+                offset = wordOffset;
+            }
+        }
+        return offset;
+    }
+    
+    public int getLength() {
+        int startOffset = Integer.MAX_VALUE;
+        int endOffset = Integer.MIN_VALUE;
+        for (WF word : this.getWFs()) {
+            int wordOffset = word.getOffset();
+            if (wordOffset < startOffset) {
+                startOffset = wordOffset;
+            }
+            if (wordOffset > endOffset) {
+                endOffset = wordOffset;
+            }
+        }
+        return endOffset - startOffset;
+    }
+    
+    public static final Comparator<Term> OFFSET_COMPARATOR = new Comparator<Term>() {
+      
+        @Override
+        public int compare(Term first, Term second) {
+            return first.getOffset() - second.getOffset();
+        }
+      
+    };
+    
 }

@@ -1786,4 +1786,8 @@ public Entity newEntity(List<Span<Term>> references) {
     return this.annotationContainer.getPredicatesByTerm(term);
     }
 
+    public List<Coref> getCorefsByTerm(Term term) {
+    return this.annotationContainer.getCorefsByTerm(term);
+    }
+    
 }
