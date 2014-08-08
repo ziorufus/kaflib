@@ -60,6 +60,9 @@ class AnnotationContainer implements Serializable {
 	/** List to keep all linked entities */
 	private List<LinkedEntity> linkedEntities;
 
+	/** List to keep all linked entities */
+	private List<SSTspan> sstSpans;
+
 	/** List to keep all opinions */
     private List<Opinion> opinions;
 
@@ -85,6 +88,7 @@ class AnnotationContainer implements Serializable {
     private HashMap<String, List<Timex3>> timeExsIndexedByWF;
     private HashMap<String, List<Factuality>> factsIndexedByWF;
     private HashMap<String, List<LinkedEntity>> linkedEntitiesIndexedByWF;
+    private HashMap<String, List<SSTspan>> sstSpansIndexedByTerm;
     private HashMap<String, List<Feature>> propertiesIndexedByTerm;
     private HashMap<String, List<Feature>> categoriesIndexedByTerm;
     private HashMap<String, List<Opinion>> opinionsIndexedByTerm;
@@ -101,6 +105,7 @@ class AnnotationContainer implements Serializable {
     HashMap<Integer, List<Timex3>> timeExsIndexedBySent;
     HashMap<Integer, List<Factuality>> factsIndexedBySent;
     HashMap<Integer, List<LinkedEntity>> linkedEntitiesIndexedBySent;
+    HashMap<Integer, List<SSTspan>> sstSpansIndexedBySent;
     HashMap<Integer, List<Feature>> propertiesIndexedBySent;
     HashMap<Integer, List<Feature>> categoriesIndexedBySent;
     HashMap<Integer, List<Opinion>> opinionsIndexedBySent;
@@ -122,6 +127,7 @@ class AnnotationContainer implements Serializable {
 	chunks = new ArrayList();
 	entities = new ArrayList();
 	properties = new ArrayList();
+		sstSpans = new ArrayList<>();
 	categories = new ArrayList();
 	coreferences = new ArrayList();
 	timeExpressions = new ArrayList();
@@ -141,6 +147,7 @@ class AnnotationContainer implements Serializable {
 	corefsIndexedByTerm =  new HashMap<String, List<Coref>>();
 	timeExsIndexedByWF =  new HashMap<String, List<Timex3>>();
 	linkedEntitiesIndexedByWF =  new HashMap<String, List<LinkedEntity>>();
+		sstSpansIndexedByTerm = new HashMap<>();
 	factsIndexedByWF = new HashMap<String, List<Factuality>>();
 	propertiesIndexedByTerm =  new HashMap<String, List<Feature>>();
 	categoriesIndexedByTerm =  new HashMap<String, List<Feature>>();
@@ -157,6 +164,7 @@ class AnnotationContainer implements Serializable {
 	corefsIndexedBySent = new HashMap<Integer, List<Coref>>();
 	timeExsIndexedBySent = new HashMap<Integer, List<Timex3>>();
 	linkedEntitiesIndexedBySent = new HashMap<Integer, List<LinkedEntity>>();
+		sstSpansIndexedBySent = new HashMap<>();
 	factsIndexedBySent =new HashMap<Integer, List<Factuality>>();
 	propertiesIndexedBySent = new HashMap<Integer, List<Feature>>();
 	categoriesIndexedBySent = new HashMap<Integer, List<Feature>>();
@@ -224,7 +232,11 @@ class AnnotationContainer implements Serializable {
 	return terms;
     }
 
-    List<String> getMarkSources() {
+	List<SSTspan> getSstSpans() {
+		return sstSpans;
+	}
+
+	List<String> getMarkSources() {
 	return new ArrayList<String>(marks.keySet());
     }
 
@@ -454,6 +466,17 @@ class AnnotationContainer implements Serializable {
 		if(linkedEntity.getWFs() != null){
 			for (WF wf : linkedEntity.getWFs().getTargets()) {
 				indexAnnotation(linkedEntity, wf.getId(), linkedEntitiesIndexedByWF);
+			}
+		}
+	}
+
+	/** Adds a SST to the container */
+	void add(SSTspan sst) {
+		sstSpans.add(sst);
+	/* Index by terms */
+		if(sst.getTerms() != null){
+			for (Term t : sst.getTerms().getTargets()) {
+				indexAnnotation(sst, t.getId(), sstSpansIndexedByTerm);
 			}
 		}
 	}
