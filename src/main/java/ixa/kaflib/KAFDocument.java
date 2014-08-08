@@ -661,6 +661,19 @@ public class KAFDocument implements Serializable {
 		annotationContainer.add(factuality);
 		return factuality;
 	}
+	
+	/**
+     * Creates a LinkedEntity object and add it to the document, using the supplied ID.
+     *
+     * @param id the entity ID
+     * @param term the Term of the coreference
+     * @return a new factuality
+     */
+    public LinkedEntity newLinkedEntity(String id, Span<WF> span) {
+        LinkedEntity linkedEntity = new LinkedEntity(id, span);
+        annotationContainer.add(linkedEntity);
+        return linkedEntity;
+    }
 
 	/**
 	 * Creates a LinkedEntity object and add it to the document
@@ -2061,4 +2074,8 @@ public class KAFDocument implements Serializable {
         return (timexs == null) ? new ArrayList<Timex3>() : timexs;
     }
 
+    public List<Factuality> getFactualities() {
+        return annotationContainer.getFactualities();
+    }
+    
 }
