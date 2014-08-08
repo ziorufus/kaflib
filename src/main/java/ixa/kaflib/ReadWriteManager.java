@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.regex.*;
 
-//todo: read facts and linkedEntities
+//todo: read facts, ssts, linkedEntities
 
 /** Reads XML files in KAF format and loads the content in a KAFDocument object, and writes the content into XML files. */
 class ReadWriteManager {
@@ -1311,6 +1311,30 @@ class ReadWriteManager {
 		root.addContent(linkedEntityElement);
 	}
 
+		List<SSTspan> ssts = annotationContainer.getSstSpans();
+		if (ssts.size() > 0) {
+			Element linkedEntityElement = new Element("SSTspans");
+			for (SSTspan s : ssts) {
+				Element lEnt = new Element("sst");
+				lEnt.setAttribute("id", s.getId());
+				lEnt.setAttribute("type", s.getType());
+				lEnt.setAttribute("label", s.getLabel());
+
+				Comment spanComment = new Comment(s.getSpanStr());
+				lEnt.addContent(spanComment);
+				Element spanElem = new Element("span");
+				for (Term target : s.getTerms().getTargets()) {
+					Element targetElem = new Element("target");
+					targetElem.setAttribute("id", target.getId());
+					spanElem.addContent(targetElem);
+				}
+				lEnt.addContent(spanElem);
+
+				linkedEntityElement.addContent(lEnt);
+			}
+			root.addContent(linkedEntityElement);
+		}
+
 	Element featuresElem = new Element("features");
 	List<Feature> properties = annotationContainer.getProperties();
 	if (properties.size() > 0) {
@@ -1641,6 +1665,9 @@ class ReadWriteManager {
 	}
 	if (term.hasLemma()) {
 	    termElem.setAttribute("lemma", term.getLemma());
+	}
+	if (term.hasSupersenseTag()) {
+		termElem.setAttribute("supersense", term.getSupersenseTag());
 	}
 	if (term.hasPos()) {
 	    termElem.setAttribute("pos", term.getPos());

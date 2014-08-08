@@ -57,7 +57,23 @@ public class Term implements Serializable {
     private boolean isComponent;
     private Term compound; // Parent compound term of this component
 
-    /** The term layer represents sentiment information which is context-independent and that can be found in a sentiment lexicon.
+	/** Supersense tag output from SST
+	 */
+	private String supersenseTag;
+
+	public String getSupersenseTag() {
+		return supersenseTag;
+	}
+
+	public void setSupersenseTag(String supersenseTag) {
+		this.supersenseTag = supersenseTag;
+	}
+
+	public boolean hasSupersenseTag() {
+		return supersenseTag != null;
+	}
+
+	/** The term layer represents sentiment information which is context-independent and that can be found in a sentiment lexicon.
      * It is related to concepts expressed by words/ terms (e.g. beautiful) or multi-word expressions (e. g. out of order).
      * We provide possibilities to store sentiment information at word level and at sense/synset level. In the latter case, the sentiment information
      * is included in the “external_reference” section and a WSD process may identify the correct sense with its sentiment information. The extension contains the following information categories.
