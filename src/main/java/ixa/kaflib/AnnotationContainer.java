@@ -431,8 +431,10 @@ class AnnotationContainer implements Serializable {
     void add(Coref coref) {
 	coreferences.add(coref);
 	/* Index by terms */
-	for (Term term : coref.getTerms()) {
-	    indexAnnotation(coref, term.getId(), corefsIndexedByTerm);
+	for (Span<Term> span : coref.getSpans()) {
+        for (Term term : span.getTargets()) {
+            indexAnnotation(coref, term.getId(), corefsIndexedByTerm);
+        }
 	}
 	//this.indexBySent(coref, coref.getSpans().get(0).getTargets().get(0).getSent(), this.corefsIndexedBySent);
     }

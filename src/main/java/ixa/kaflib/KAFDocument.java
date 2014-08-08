@@ -1119,7 +1119,8 @@ public class KAFDocument implements Serializable {
 	}
 
 	public List<Predicate> getPredicatesBySent(Integer sent) {
-		return this.annotationContainer.predicatesIndexedBySent.get(sent);
+		List<Predicate> result = this.annotationContainer.predicatesIndexedBySent.get(sent);
+		return result != null ? result : Collections.<Predicate>emptyList(); 
 	}
 
 	public List<Predicate> getPredicatesByPara(Integer para) {
@@ -2030,7 +2031,12 @@ public class KAFDocument implements Serializable {
 	}
 
     public List<Coref> getCorefsByTerm(Term term) {
-    return this.annotationContainer.getCorefsByTerm(term);
+        return this.annotationContainer.getCorefsByTerm(term);
     }
-    
+
+    public List<Timex3> getTimeExsBySent(Integer sent) {
+        List<Timex3> timexs = this.annotationContainer.timeExsIndexedBySent.get(sent);
+        return (timexs == null) ? new ArrayList<Timex3>() : timexs;
+    }
+
 }
