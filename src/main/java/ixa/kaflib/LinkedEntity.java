@@ -21,6 +21,8 @@ public class LinkedEntity {
 	private String reference;
 	private double confidence;
 
+	private ArrayList<SimpleTopic> topics = new ArrayList<>();
+
 	/**
 	 * Mentions to the same entity (at least one required)
 	 */
@@ -68,6 +70,14 @@ public class LinkedEntity {
 //				this.mentions.add(new Span<WF>(copiedTargets));
 //			}
 //		}
+	}
+
+	public ArrayList<SimpleTopic> getTopics() {
+		return topics;
+	}
+
+	public void addTopic(SimpleTopic topic) {
+		topics.add(topic);
 	}
 
 	public String getResource() {

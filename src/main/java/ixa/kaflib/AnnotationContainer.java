@@ -54,6 +54,9 @@ class AnnotationContainer implements Serializable {
     /** List to keep all timeExpressions */
     private List<Timex3> timeExpressions;
 
+	/** List to keep all topics */
+	private List<Topic> topics;
+
 	/** List to keep all factualities */
 	private List<Factuality> factualities;
 
@@ -138,6 +141,7 @@ class AnnotationContainer implements Serializable {
 	predicates = new ArrayList();
 	trees = new ArrayList();
 	unknownLayers = new ArrayList<Element>();
+		topics = new ArrayList<>();
 
 	termsIndexedByWF = new HashMap<String, List<Term>>();
 	marksIndexedByTerm = new HashMap<String, Map<String, List<Mark>>>();
@@ -292,7 +296,12 @@ class AnnotationContainer implements Serializable {
 	return opinions;
     }
 
-    /** Returns all relations */
+	/** Returns all topics */
+	List<Topic> getTopics() {
+		return topics;
+	}
+
+	/** Returns all relations */
     List<Relation> getRelations() {
 	return relations;
     }
@@ -479,6 +488,11 @@ class AnnotationContainer implements Serializable {
 				indexAnnotation(sst, t.getId(), sstSpansIndexedByTerm);
 			}
 		}
+	}
+
+	/** Adds a topic to the container */
+	void add(Topic t) {
+		topics.add(t);
 	}
 
 	/** Adds an opinion to the container */

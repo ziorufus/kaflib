@@ -698,6 +698,28 @@ public class KAFDocument implements Serializable {
 	}
 
 	/**
+	 * Creates a Topic object and add it to the document
+	 *
+	 * @param term the Term of the coreference.
+	 * @return a new factuality.
+	 */
+	public Topic newTopic() {
+		String newId = idManager.topics.getNext();
+		Topic t = new Topic(newId);
+		annotationContainer.add(t);
+		return t;
+	}
+
+	public Topic newTopic(String label, float probability) {
+		String newId = idManager.topics.getNext();
+		Topic t = new Topic(newId);
+		t.setLabel(label);
+		t.setProbability(probability);
+		annotationContainer.add(t);
+		return t;
+	}
+
+	/**
 	 * Creates a new property. It receives it's ID as an argument. The property is added to the document.
 	 *
 	 * @param id         the ID of the property.

@@ -55,9 +55,8 @@ public class Term implements Serializable {
     private boolean isComponent;
     private Term compound; // Parent compound term of this component
 
-	/** Supersense tag output from SST
-	 */
 	private String supersenseTag;
+	private String wordnetSense;
 
 	public String getSupersenseTag() {
 		return supersenseTag;
@@ -69,6 +68,18 @@ public class Term implements Serializable {
 
 	public boolean hasSupersenseTag() {
 		return supersenseTag != null;
+	}
+
+	public void setWordnetSense(String wordnetSense) {
+		this.wordnetSense = wordnetSense;
+	}
+
+	public String getWordnetSense() {
+		return wordnetSense;
+	}
+
+	public boolean hasWordnetSense() {
+		return wordnetSense != null;
 	}
 
 	/** The term layer represents sentiment information which is context-independent and that can be found in a sentiment lexicon.

@@ -29,6 +29,7 @@ class IdManager implements Serializable {
 	public GenericId nonterminals = new GenericId("nter");
 	public GenericId edges = new GenericId("tre");
 	public GenericId ssts = new GenericId("sst");
+	public GenericId topics = new GenericId("top");
 
 	private HashMap<String, Integer> componentCounter = new HashMap<>();
 	boolean inconsistentIdComponent = false;
