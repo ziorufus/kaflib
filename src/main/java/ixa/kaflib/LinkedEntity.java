@@ -21,7 +21,7 @@ public class LinkedEntity {
 	private String reference;
 	private double confidence;
 
-	private ArrayList<SimpleTopic> topics = new ArrayList<>();
+	private ArrayList<SimpleTopic> topics = new ArrayList();
 
 	/**
 	 * Mentions to the same entity (at least one required)

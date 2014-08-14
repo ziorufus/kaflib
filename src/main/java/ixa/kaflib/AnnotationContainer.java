@@ -141,7 +141,7 @@ class AnnotationContainer implements Serializable {
 	predicates = new ArrayList();
 	trees = new ArrayList();
 	unknownLayers = new ArrayList<Element>();
-		topics = new ArrayList<>();
+		topics = new ArrayList();
 
 	termsIndexedByWF = new HashMap<String, List<Term>>();
 	marksIndexedByTerm = new HashMap<String, Map<String, List<Mark>>>();

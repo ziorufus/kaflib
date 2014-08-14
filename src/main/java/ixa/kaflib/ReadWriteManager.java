@@ -30,6 +30,7 @@ import java.nio.charset.Charset;
 import java.util.regex.*;
 
 //todo: read facts, ssts, wordnet, linkedEntities, topics, topics in linkedEntities
+// FRANCESCO: should be done now (but perhaps check my code)
 
 /**
  * Reads XML files in KAF format and loads the content in a KAFDocument object, and writes the content into XML files.
@@ -765,6 +766,84 @@ class ReadWriteManager {
 					}
 				}
 			}
+			else if (elem.getName().equals("factualitylayer")) {
+			    for (Element factElem : elem.getChildren("factvalue")) {
+			        String id = getAttribute("id", factElem);
+			        WF wf = wfIndex.get(id);
+			        List<Term> terms = kaf.getTermsByWFs(Collections.singletonList(wf));
+			        if (terms.isEmpty()) {
+			            System.err.println("Cannot detect term for factvalue ID " + id);
+			        } else {
+                        Factuality factuality = kaf.newFactuality(terms.get(0));
+                        for (Element partElem : factElem.getChildren("factuality")) {
+                            String prediction = getAttribute("prediction", partElem);
+                            double confidence = Double.parseDouble(getAttribute("confidence", partElem));
+                            factuality.addFactualityPart(prediction, confidence);
+                        }
+			        }
+			    }
+			}
+			else if (elem.getName().equals("linkedEntities")) {
+                for (Element entityElem : elem.getChildren("linkedEntity")) {
+                    String id = getAttribute("id", entityElem);
+                    Span<WF> span = KAFDocument.newWFSpan();
+                    List<Element> targetElems = entityElem.getChild("span").getChildren();
+                    if (targetElems.size() < 1) {
+                        throw new IllegalStateException("Every span in an entity must contain at least one target inside");
+                    }
+                    for (Element targetElem : targetElems) {
+                        String targetWfId = getAttribute("id", targetElem);
+                        WF wf = wfIndex.get(targetWfId);
+                        if (wf == null) {
+                            throw new KAFNotValidException("WF " + targetWfId + " not found when loading linked entity " + id);
+                        }
+                        span.addTarget(wf);
+                    }
+                    LinkedEntity e = kaf.newLinkedEntity(id, span);
+                    e.setResource(getOptAttribute("resource", entityElem));
+                    e.setReference(getOptAttribute("reference", entityElem));
+                    String confidence = getOptAttribute("confidence", entityElem);
+                    if (confidence != null) {
+                        e.setConfidence(Double.parseDouble(confidence));
+                    }
+                    Element topicsElem = entityElem.getChild("topics");
+                    if (topicsElem != null) {
+                        for (Element topicElem : topicsElem.getChildren("topic")) {
+                            String label = getAttribute("label", topicElem);
+                            float probability = Float.parseFloat(getAttribute("probability", topicElem));
+                            e.addTopic(new SimpleTopic(probability, label));
+                        }
+                    }
+                }
+			}
+            else if (elem.getName().equals("SSTspans")) {
+                for (Element sstElem : elem.getChildren("sst")) {
+                    String id = getAttribute("id", sstElem);
+                    String type = getAttribute("type", sstElem);
+                    String label = getAttribute("label", sstElem);
+                    Span<Term> span = KAFDocument.newTermSpan();
+                    List<Element> targetElems = sstElem.getChild("span").getChildren();
+                    if (targetElems.size() < 1) {
+                        throw new IllegalStateException("Every span in an entity must contain at least one target inside");
+                    }
+                    for (Element targetElem : targetElems) {
+                        String targetTermId = getAttribute("id", targetElem);
+                        Term term = termIndex.get(targetTermId);
+                        if (term == null) {
+                            throw new KAFNotValidException("Term " + targetTermId + " not found when loading sst " + id);
+                        }
+                        span.addTarget(term);
+                    }
+                    kaf.newSST(span, type, label);
+                }                
+            }
+            else if (elem.getName().equals("topics")) {
+                for (Element topicElem : elem.getChildren("topic")) {
+                    String label = getAttribute("label", topicElem);
+                    float probability = Float.parseFloat(getAttribute("probability", topicElem));
+                    kaf.newTopic(label, probability);
+                }
+            }
 			else { // This layer is not recognised by the library
 				//elem.detach();
 				kaf.addUnknownLayer(elem);
@@ -799,6 +878,14 @@ class ReadWriteManager {
 		String lemma = getOptAttribute("lemma", termElem);
 		if (lemma != null) {
 			newTerm.setLemma(lemma);
+		}
+		String supersenseTag = getOptAttribute("supersense", termElem);
+		if (supersenseTag != null) {
+		    newTerm.setSupersenseTag(supersenseTag);
+		}
+		String wordnetSense = getOptAttribute("wordnet", termElem);
+		if (wordnetSense != null) {
+		    newTerm.setWordnetSense(wordnetSense);
 		}
 		String pos = getOptAttribute("pos", termElem);
 		if (pos != null) {
