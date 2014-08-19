@@ -679,6 +679,12 @@ class ReadWriteManager {
 					if (confidence != null) {
 						newPredicate.setConfidence(Float.valueOf(confidence));
 					}
+					String flags = getOptAttribute("flags", predicateElem);
+					if (flags != null) {
+					    for (String flag : flags.split(",")) {
+					        newPredicate.addFlag(flag);
+					    }
+					}
 					List<Element> roleElems = predicateElem.getChildren("role");
 					for (Element roleElem : roleElems) {
 						String rid = getAttribute("id", roleElem);
@@ -703,6 +709,12 @@ class ReadWriteManager {
 							List<ExternalRef> externalRefs = getExternalReferences(rExternalReferencesElems.get(0), kaf);
 							newRole.addExternalRefs(externalRefs);
 						}
+                        String roleFlags = getOptAttribute("flags", roleElem);
+                        if (roleFlags != null) {
+                            for (String roleFlag : roleFlags.split(",")) {
+                                newRole.addFlag(roleFlag);
+                            }
+                        }
 						newPredicate.addRole(newRole);
 					}
 				}
@@ -1642,6 +1654,15 @@ class ReadWriteManager {
 				if (predicate.hasConfidence()) {
 					predicateElem.setAttribute("confidence", Float.toString(predicate.getConfidence()));
 				}
+				if (!predicate.getFlags().isEmpty()) {
+				    StringBuilder builder = new StringBuilder();
+				    String separator = "";
+				    for (String flag : predicate.getFlags()) {
+				        builder.append(separator).append(flag);
+				        separator = ",";
+				    }
+				    predicateElem.setAttribute("flags", builder.toString());
+				}
 				Span<Term> span = predicate.getSpan();
 				if (span.getTargets().size() > 0) {
 					Comment spanComment = new Comment(predicate.getSpanStr());
@@ -1666,6 +1687,15 @@ class ReadWriteManager {
 					Element roleElem = new Element("role");
 					roleElem.setAttribute("id", role.getId());
 					roleElem.setAttribute("semRole", role.getSemRole());
+					if (!role.getFlags().isEmpty()) {
+	                    StringBuilder builder = new StringBuilder();
+	                    String separator = "";
+	                    for (String flag : role.getFlags()) {
+	                        builder.append(separator).append(flag);
+	                        separator = ",";
+	                    }
+	                    roleElem.setAttribute("flags", builder.toString());
+	                }
 					Span<Term> roleSpan = role.getSpan();
 					if (roleSpan.getTargets().size() > 0) {
 						Comment spanComment = new Comment(role.getStr());

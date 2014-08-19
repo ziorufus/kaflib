@@ -12,12 +12,14 @@ public class Predicate implements Serializable {
 	private String semRole;
 	private Span<Term> span;
 	private List<ExternalRef> externalReferences;
+	private List<String> flags;
 
 	Role(String id, String semRole, Span span) {
 	    this.rid = id;
 	    this.semRole = semRole;
 	    this.span = span;
 	    this.externalReferences = new ArrayList<ExternalRef>();
+	    this.flags = new ArrayList<String>();
 	}
 
 	public String getId() {
@@ -78,6 +80,21 @@ public class Predicate implements Serializable {
 	public void addExternalRefs(List<ExternalRef> externalRefs) {
 	    externalReferences.addAll(externalRefs);
 	}
+	
+    public List<String> getFlags() {
+    return this.flags;
+    }
+       
+    public void addFlag(String flag) {
+    if (!this.flags.contains(flag)) {
+        this.flags.add(flag);
+    }
+    }
+       
+    public void removeFlag(String flag) {
+    this.flags.remove(flag);
+    }
+	       
     }
 
     private String id;
@@ -86,13 +103,15 @@ public class Predicate implements Serializable {
     private Span<Term> span;
     private List<Role> roles;
     private List<ExternalRef> externalReferences;
-
+    private List<String> flags;
+    
     Predicate(String id, Span<Term> span) {
 	this.id = id;
 	this.span = span;
 	this.roles = new ArrayList<Role>();
 	this.confidence = -1.0f;
 	this.externalReferences = new ArrayList<ExternalRef>();
+    this.flags = new ArrayList<String>();
     }
 
     public String getId() {
@@ -193,4 +212,19 @@ public class Predicate implements Serializable {
     public void addRole(Role role) {
 	this.roles.add(role);
     }
+    
+    public List<String> getFlags() {
+    return this.flags;
+    }
+    
+    public void addFlag(String flag) {
+    if (!this.flags.contains(flag)) {
+        this.flags.add(flag);
+    }
+    }
+    
+    public void removeFlag(String flag) {
+    this.flags.remove(flag);
+    }
+    
 }
