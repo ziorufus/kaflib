@@ -51,97 +51,6 @@ public class KAFDocument implements Serializable {
 		}
 	}
 
-	public class LinguisticProcessor implements Serializable {
-		String name;
-		String timestamp;
-		String beginTimestamp;
-		String endTimestamp;
-		String version;
-
-		private LinguisticProcessor(String name) {
-			this.name = name;
-		}
-
-		/* Deprecated */
-		private LinguisticProcessor(String name, String timestamp, String version) {
-			this.name = name;
-			this.timestamp = timestamp;
-			this.version = version;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public boolean hasTimestamp() {
-			return this.timestamp != null;
-		}
-
-		public void setTimestamp(String timestamp) {
-			this.timestamp = timestamp;
-		}
-
-		public void setTimestamp() {
-			String timestamp = createTimestamp();
-			this.timestamp = timestamp;
-		}
-
-		public String getTimestamp() {
-			return this.timestamp;
-		}
-
-		public boolean hasBeginTimestamp() {
-			return beginTimestamp != null;
-		}
-
-		public void setBeginTimestamp(String timestamp) {
-			this.beginTimestamp = timestamp;
-		}
-
-		public void setBeginTimestamp() {
-			String timestamp = createTimestamp();
-			this.beginTimestamp = timestamp;
-		}
-
-		public String getBeginTimestamp() {
-			return beginTimestamp;
-		}
-
-		public boolean hasEndTimestamp() {
-			return endTimestamp != null;
-		}
-
-		public void setEndTimestamp(String timestamp) {
-			this.endTimestamp = timestamp;
-		}
-
-		public void setEndTimestamp() {
-			String timestamp = createTimestamp();
-			this.endTimestamp = timestamp;
-		}
-
-		public String getEndTimestamp() {
-			return endTimestamp;
-		}
-
-		public boolean hasVersion() {
-			return version != null;
-		}
-
-		public void setVersion(String version) {
-			this.version = version;
-		}
-
-		public String getVersion() {
-			return version;
-		}
-
-	}
-
 	/**
 	 * Language identifier
 	 */
@@ -244,9 +153,7 @@ public class KAFDocument implements Serializable {
 	 * Adds a linguistic processor to the document header. The timestamp is added implicitly.
 	 */
 	public LinguisticProcessor addLinguisticProcessor(String layer, String name) {
-		String timestamp = createTimestamp();
-		LinguisticProcessor lp = new LinguisticProcessor(name);
-		//lp.setBeginTimestamp(timestamp); // no default timestamp
+		LinguisticProcessor lp = new LinguisticProcessor(layer, name);
 		List<LinguisticProcessor> layerLps = lps.get(layer);
 		if (layerLps == null) {
 			layerLps = new ArrayList<LinguisticProcessor>();
@@ -254,6 +161,16 @@ public class KAFDocument implements Serializable {
 		}
 		layerLps.add(lp);
 		return lp;
+	}
+
+	public LinguisticProcessor addLinguisticProcessor(String layer, LinguisticProcessor linguisticProcessor) {
+		List<LinguisticProcessor> layerLps = lps.get(layer);
+		if (layerLps == null) {
+			layerLps = new ArrayList<LinguisticProcessor>();
+			lps.put(layer, layerLps);
+		}
+		layerLps.add(linguisticProcessor);
+		return linguisticProcessor;
 	}
 
 	public void addLinguisticProcessors(Map<String, List<LinguisticProcessor>> lps) {
@@ -1160,17 +1077,6 @@ public class KAFDocument implements Serializable {
 
 	public List<Predicate> getPredicatesByPara(Integer para) {
 		return this.annotationContainer.getLayerByPara(para, this.annotationContainer.predicatesIndexedBySent);
-	}
-
-	/**
-	 * Returns current timestamp.
-	 */
-	public String createTimestamp() {
-		Date date = new Date();
-		//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd H:mm:ss");
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-		String formattedDate = sdf.format(date);
-		return formattedDate;
 	}
 
 	/**
