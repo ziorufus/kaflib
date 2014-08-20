@@ -114,7 +114,7 @@ class ReadWriteManager {
 					List<Element> lpElems = lpsElem.getChildren();
 					for (Element lpElem : lpElems) {
 						String name = getAttribute("name", lpElem);
-						KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(layer, name);
+						LinguisticProcessor newLp = kaf.addLinguisticProcessor(layer, name);
 						String timestamp = getOptAttribute("timestamp", lpElem);
 						if (timestamp != null) {
 							newLp.setTimestamp(timestamp);
@@ -1126,11 +1126,11 @@ class ReadWriteManager {
 			kafHeaderElem.addContent(pubElem);
 		}
 
-		Map<String, List<KAFDocument.LinguisticProcessor>> lps = kaf.getLinguisticProcessors();
+		Map<String, List<LinguisticProcessor>> lps = kaf.getLinguisticProcessors();
 		for (Map.Entry entry : lps.entrySet()) {
 			Element lpsElem = new Element("linguisticProcessors");
 			lpsElem.setAttribute("layer", (String) entry.getKey());
-			for (KAFDocument.LinguisticProcessor lp : (List<KAFDocument.LinguisticProcessor>) entry.getValue()) {
+			for (LinguisticProcessor lp : (List<LinguisticProcessor>) entry.getValue()) {
 				Element lpElem = new Element("lp");
 				lpElem.setAttribute("name", lp.name);
 				if (lp.hasTimestamp()) {
