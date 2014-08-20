@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import org.jdom2.Element;
 
+import org.jdom2.Element;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 
@@ -457,6 +457,7 @@ class AnnotationContainer implements Serializable {
 		indexAnnotation(timex3, wf.getId(), timeExsIndexedByWF);
 	    }
 	}
+	indexBySent(timex3, timex3.getWFs().get(0).getSent(), timeExsIndexedBySent);
     }
 
 	/** Adds a factuality to the container */
@@ -811,4 +812,138 @@ class AnnotationContainer implements Serializable {
 	    throw new IllegalArgumentException("Wrong layer");
 	}
     }
+
+    void removeAnnotation(Object annotation) {
+        if (annotation instanceof Term) {
+            Term term = (Term) annotation;
+            terms.remove(term);
+            for (WF wf : term.getWFs()) {
+                unindexAnnotation(term, wf.getId(), termsIndexedByWF);
+            }
+            if (!term.isComponent()) {
+                unindexBySent(term, term.getSent(), this.termsIndexedBySent);
+            }
+        } else if (annotation instanceof Mark) {
+            throw new UnsupportedOperationException();
+
+        } else if (annotation instanceof Dep) {
+            Dep dep = (Dep) annotation;
+            deps.remove(dep);
+            if (dep.getFrom() != null) {
+                unindexAnnotation(dep, dep.getFrom().getId(), depsIndexedByTerm);
+            }
+            if (dep.getTo() != null) {
+                unindexAnnotation(dep, dep.getTo().getId(), depsIndexedByTerm);
+            }
+            unindexBySent(dep, dep.getFrom().getSent(), this.depsIndexedBySent);
+
+        } else if (annotation instanceof Chunk) {
+            throw new UnsupportedOperationException();
+
+        } else if (annotation instanceof Entity) {
+            Entity entity = (Entity) annotation;
+            entities.remove(entity);
+            for (Term term : entity.getTerms()) {
+                unindexAnnotation(entity, term.getId(), entitiesIndexedByTerm);
+            }
+            this.unindexBySent(entity, entity.getSpans().get(0).getTargets().get(0).getSent(),
+                    this.entitiesIndexedBySent);
+
+        } else if (annotation instanceof Feature) {
+            throw new UnsupportedOperationException();
+
+        } else if (annotation instanceof Timex3) {
+            Timex3 timex3 = (Timex3) annotation;
+            timeExpressions.remove(timex3);
+            if (timex3.getWFs() != null) {
+                for (WF wf : timex3.getWFs()) {
+                    unindexAnnotation(timex3, wf.getId(), timeExsIndexedByWF);
+                }
+            }
+            unindexBySent(timex3, timex3.getWFs().get(0).getSent(), timeExsIndexedBySent);
+
+        } else if (annotation instanceof Coref) {
+            Coref coref = (Coref) annotation;
+            coreferences.remove(coref);
+            for (Span<Term> span : coref.getSpans()) {
+                for (Term term : span.getTargets()) {
+                    unindexAnnotation(coref, term.getId(), corefsIndexedByTerm);
+                }
+            }
+
+        } else if (annotation instanceof Factuality) {
+            Factuality factuality = (Factuality) annotation;
+            factualities.remove(factuality);
+            if (factuality.getWFs() != null) {
+                for (WF wf : factuality.getWFs()) {
+                    unindexAnnotation(factuality, wf.getId(), factsIndexedByWF);
+                }
+            }
+
+        } else if (annotation instanceof LinkedEntity) {
+            LinkedEntity entity = (LinkedEntity) annotation;
+            linkedEntities.remove(entity);
+            if (entity.getWFs() != null) {
+                for (WF wf : entity.getWFs().getTargets()) {
+                    unindexAnnotation(entity, wf.getId(), linkedEntitiesIndexedByWF);
+                }
+            }
+
+        } else if (annotation instanceof SSTspan) {
+            SSTspan sst = (SSTspan) annotation;
+            sstSpans.remove(sst);
+            if (sst.getTerms() != null) {
+                for (Term t : sst.getTerms().getTargets()) {
+                    unindexAnnotation(sst, t.getId(), sstSpansIndexedByTerm);
+                }
+            }
+
+        } else if (annotation instanceof Topic) {
+            throw new UnsupportedOperationException();
+
+        } else if (annotation instanceof Opinion) {
+            throw new UnsupportedOperationException();
+
+        } else if (annotation instanceof Relation) {
+            throw new UnsupportedOperationException();
+
+        } else if (annotation instanceof Predicate) {
+            Predicate predicate = (Predicate) annotation;
+            predicates.remove(predicate);
+            for (Term term : predicate.getTerms()) {
+                unindexAnnotation(predicate, term.getId(), predicatesIndexedByTerm);
+            }
+            unindexBySent(predicate, predicate.getSpan().getTargets().get(0).getSent(),
+                    this.predicatesIndexedBySent);
+
+        } else if (annotation instanceof Tree) {
+            throw new UnsupportedOperationException();
+
+        } else if (annotation instanceof Element) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private <T> void unindexAnnotation(T annotation, String hashId, HashMap<String, List<T>> index) {
+        List<T> list = index.get(hashId);
+        if (list != null) {
+            list.remove(annotation);
+            if (list.isEmpty()) {
+                index.remove(hashId);
+            }
+        }
+    }
+
+    private <T> void unindexBySent(T annotation, Integer sent, HashMap<Integer, List<T>> index) {
+        if (sent > 0) {
+            List<T> list = index.get(sent);
+            if (list != null) {
+                list.remove(annotation);
+                if (list.isEmpty()) {
+                    index.remove(sent);
+                }
+            }
+        }
+    }
+    
 }

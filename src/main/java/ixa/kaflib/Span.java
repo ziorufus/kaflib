@@ -35,6 +35,23 @@ public class Span<T> implements Serializable {
 	return (this.targets.size() <= 0);
     }
 
+    public String getStr() {
+        StringBuilder builder = new StringBuilder();
+        for (Object term : targets) {
+            if (builder.length() != 0) {
+                builder.append(' ');
+            }
+            if (term instanceof Term) {
+                builder.append(((Term) term).getStr());
+            } else if (term instanceof WF) {
+                builder.append(((WF) term).getForm());
+            } else {
+                builder.append(term.toString());
+            }
+        }
+        return builder.toString();
+    }
+    
     public List<T> getTargets() {
 	return this.targets;
     }
