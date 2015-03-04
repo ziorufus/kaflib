@@ -5,13 +5,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.Serializable;
 
-/** A named entity is a term (or a multiword) that clearly identifies one item. The optional Named Entity layer is used to reference terms that are named entities. */
+/** An entity is a term (or a multiword) that clearly identifies one item. The optional Entity layer is used to reference terms that are entities. */
 public class Entity implements Relational, Serializable {
 
-    /** Named entity's ID (required) */
+    private static final long serialVersionUID = 1L;
+
+    /** Entity's ID (required) */
     private String eid;
 
-    /** Type of the named entity (optional). Currently, 8 values are possible: 
+    /** Type of the entity (optional). Currently, 8 values are possible: 
      * - Person
      * - Organization
      * - Location
@@ -22,8 +24,11 @@ public class Entity implements Relational, Serializable {
      * - Misc
      */ 
     private String type;
+    
+    /** Whether the entity is a 'named entity' (i.e., proper noun). */
+    private boolean named;
 
-    /** Reference to different occurrences of the same named entity in the document (at least one required) */
+    /** Reference to different occurrences of the same entity in the document (at least one required) */
     private List<Span<Term>> references;
 
     /** External references (optional) */
@@ -39,6 +44,7 @@ public class Entity implements Relational, Serializable {
 	this.eid = eid;
 	this.references = references;
 	this.externalReferences = new ArrayList<ExternalRef>();
+	this.named = true;
     }
 
     Entity(Entity entity, HashMap<String, Term> terms) {
@@ -71,6 +77,7 @@ public class Entity implements Relational, Serializable {
 	for (ExternalRef externalRef : entity.getExternalRefs()) {
 	    this.externalReferences.add(new ExternalRef(externalRef));
 	}
+	this.named = true;
     }
 
     public String getId() {
@@ -88,9 +95,17 @@ public class Entity implements Relational, Serializable {
     public String getType() {
 	return type;
     }
-
+       
     public void setType(String type) {
 	this.type = type;
+    }
+
+    public boolean isNamed() {
+    return named;
+    }
+
+    public void setNamed(boolean named) {
+    this.named = named;
     }
 
     /** Returns the term targets of the first span. When targets of other spans are needed getReferences() method should be used. */ 

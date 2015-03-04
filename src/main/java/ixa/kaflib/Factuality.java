@@ -59,29 +59,29 @@ public class Factuality implements Serializable {
 		return ret;
 	}
 
-	class FactualityPart {
+	public class FactualityPart {
 
 		String prediction;
 		double confidence;
 
-		FactualityPart(String prediction, double confidence) {
+		public FactualityPart(String prediction, double confidence) {
 			this.prediction = prediction;
 			this.confidence = confidence;
 		}
 
-		String getPrediction() {
+		public String getPrediction() {
 			return prediction;
 		}
 
-		void setPrediction(String prediction) {
+		public void setPrediction(String prediction) {
 			this.prediction = prediction;
 		}
 
-		double getConfidence() {
+		public double getConfidence() {
 			return confidence;
 		}
 
-		void setConfidence(double confidence) {
+		public void setConfidence(double confidence) {
 			this.confidence = confidence;
 		}
 

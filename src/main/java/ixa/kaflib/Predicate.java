@@ -213,6 +213,10 @@ public class Predicate implements Serializable {
 	this.roles.add(role);
     }
     
+    public void removeRole(Role role) {
+    this.roles.remove(role);
+    }
+    
     public List<String> getFlags() {
     return this.flags;
     }
