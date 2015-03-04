@@ -847,7 +847,7 @@ class ReadWriteManager {
                         span.addTarget(term);
                     }
                     kaf.newSST(span, type, label);
-                }                
+                }
             }
             else if (elem.getName().equals("topics")) {
                 for (Element topicElem : elem.getChildren("topic")) {
@@ -1723,11 +1723,25 @@ class ReadWriteManager {
 			root.addContent(predicatesElem);
 		}
 
+		HashMap<Integer, String> conStrings = annotationContainer.getConstituencyStrings();
+		if (conStrings.size() > 0) {
+			Element constituentsElem = new Element("constituencyStrings");
+			for (Integer sent : conStrings.keySet()) {
+				String constituencyString = conStrings.get(sent);
+				Element treeElem = new Element("tree");
+				treeElem.setAttribute("sentence", sent.toString());
+				treeElem.addContent(constituencyString);
+				constituentsElem.addContent(treeElem);
+			}
+			root.addContent(constituentsElem);
+		}
+
 		List<Tree> constituents = annotationContainer.getConstituents();
 		if (constituents.size() > 0) {
 			Element constituentsElem = new Element("constituency");
 			for (Tree tree : constituents) {
 				Element treeElem = new Element("tree");
+				treeElem.setAttribute("sentence", tree.getSentence().toString());
 				constituentsElem.addContent(treeElem);
 				List<NonTerminal> nonTerminals = new LinkedList<NonTerminal>();
 				List<Terminal> terminals = new LinkedList<Terminal>();

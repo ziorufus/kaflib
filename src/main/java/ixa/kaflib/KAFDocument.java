@@ -828,13 +828,25 @@ public class KAFDocument implements Serializable {
 	}
 
 	public Tree newConstituent(TreeNode root) {
-		Tree tree = new Tree(root);
-		annotationContainer.add(tree);
+		return newConstituent(root, null);
+	}
+	
+	public Tree newConstituent(TreeNode root, Integer sentence) {
+		Tree tree = new Tree(root, sentence);
+		annotationContainer.add(tree, sentence);
 		return tree;
+	}
+	
+	public void addConstituencyString(String constituencyString, Integer sent) {
+		annotationContainer.add(constituencyString, sent);
 	}
 
 	public void addConstituencyFromParentheses(String parseOut) throws Exception {
-		Tree.parenthesesToKaf(parseOut, this);
+		addConstituencyFromParentheses(parseOut, null);
+	}
+
+	public void addConstituencyFromParentheses(String parseOut, Integer sentence) throws Exception {
+		Tree.parenthesesToKaf(parseOut, this, sentence);
 	}
 
 	public NonTerminal newNonTerminal(String id, String label) {

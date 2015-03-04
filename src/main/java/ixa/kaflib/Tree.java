@@ -13,12 +13,18 @@ public class Tree implements Serializable { //?
 
     /** Tree's root node */
     private TreeNode root;
+	private Integer sentence = null;
 
     Tree(TreeNode root) {
 	this.root = root;
     }
 
-    public TreeNode getRoot() {
+	Tree(TreeNode root, Integer sentence) {
+		this.root = root;
+		this.sentence = sentence;
+	}
+
+	public TreeNode getRoot() {
 	return this.root;
     }
 
@@ -31,7 +37,15 @@ public class Tree implements Serializable { //?
     /* Code for converting OpenNLP's parentheses output to NAF */
     /***********************************************************/
 
-    static void parenthesesToKaf(String parOut, KAFDocument kaf) throws Exception {
+	static void parenthesesToKaf(String parOut, KAFDocument kaf) throws Exception {
+		parenthesesToKaf(parOut, kaf, null);
+	}
+
+	public Integer getSentence() {
+		return sentence;
+	}
+
+	static void parenthesesToKaf(String parOut, KAFDocument kaf, Integer sentence) throws Exception {
 	String[] tokens = Tree.tokenize(parOut);
 	Tree.check(tokens);
         HashMap<Integer, Integer> parMatching = Tree.matchParentheses(tokens);
@@ -45,7 +59,7 @@ public class Tree implements Serializable { //?
 	while (current < tokens.length) {
 	    int end = parMatching.get(current);
 	    NonTerminal root = Tree.createNonTerminal(tokens, current+1, end-1, parMatching, termMatching, kaf);
-	    kaf.newConstituent(root);
+	    kaf.newConstituent(root, sentence);
 	    current = end + 1;
 	}
     }
