@@ -553,12 +553,12 @@ class AnnotationContainer implements Serializable {
 	void add(Timex3 timex3) {
 		timeExpressions.add(timex3);
 	/* Index by terms */
-		if (timex3.getWFs() != null) {
-			for (WF wf : timex3.getWFs()) {
+		if (timex3.getSpan().getTargets() != null) {
+			for (WF wf : timex3.getSpan().getTargets()) {
 				indexAnnotation(timex3, wf.getId(), timeExsIndexedByWF);
 			}
 		}
-		indexBySent(timex3, timex3.getWFs().get(0).getSent(), timeExsIndexedBySent);
+		indexBySent(timex3, timex3.getSpan().getTargets().get(0).getSent(), timeExsIndexedBySent);
 	}
 
 	/**
@@ -1012,12 +1012,12 @@ class AnnotationContainer implements Serializable {
         } else if (annotation instanceof Timex3) {
             Timex3 timex3 = (Timex3) annotation;
             timeExpressions.remove(timex3);
-            if (timex3.getWFs() != null) {
-                for (WF wf : timex3.getWFs()) {
+            if (timex3.getSpan().getTargets() != null) {
+                for (WF wf : timex3.getSpan().getTargets()) {
                     unindexAnnotation(timex3, wf.getId(), timeExsIndexedByWF);
                 }
             }
-            unindexBySent(timex3, timex3.getWFs().get(0).getSent(), timeExsIndexedBySent);
+            unindexBySent(timex3, timex3.getSpan().getTargets().get(0).getSent(), timeExsIndexedBySent);
 
         } else if (annotation instanceof Coref) {
             Coref coref = (Coref) annotation;

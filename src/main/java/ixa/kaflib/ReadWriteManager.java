@@ -445,7 +445,7 @@ class ReadWriteManager {
 					}
 					String timex3Func = getOptAttribute("functionInDocument", timex3Elem);
 					if (timex3Func != null) {
-						newTimex3.setFuncInDoc(timex3Func);
+						newTimex3.setFunctionInDocument(timex3Func);
 					}
 				}
 			}
@@ -1362,20 +1362,19 @@ class ReadWriteManager {
 				timex3Elem.setAttribute("id", timex3.getId());
 				timex3Elem.setAttribute("type", timex3.getType());
 				timex3Elem.setAttribute("value", timex3.getValue());
-				for (Span<WF> span : timex3.getSpans()) {
-					Comment spanComment = new Comment(timex3.getSpanStr(span));
-					timex3Elem.addContent(spanComment);
-					Element spanElem = new Element("span");
-					for (WF target : span.getTargets()) {
-						Element targetElem = new Element("target");
-						targetElem.setAttribute("id", target.getId());
-						if (target == span.getHead()) {
-							targetElem.setAttribute("head", "yes");
-						}
-						spanElem.addContent(targetElem);
+				Span<WF> span = timex3.getSpan();
+				Comment spanComment = new Comment(timex3.getSpanStr(span));
+				timex3Elem.addContent(spanComment);
+				Element spanElem = new Element("span");
+				for (WF target : span.getTargets()) {
+					Element targetElem = new Element("target");
+					targetElem.setAttribute("id", target.getId());
+					if (target == span.getHead()) {
+						targetElem.setAttribute("head", "yes");
 					}
-					timex3Elem.addContent(spanElem);
+					spanElem.addContent(targetElem);
 				}
+				timex3Elem.addContent(spanElem);
 				timeExsElem.addContent(timex3Elem);
 			}
 			root.addContent(timeExsElem);
