@@ -534,9 +534,10 @@ public class KAFDocument implements Serializable {
      * @param references different mentions (list of targets) to the same entity.
      * @return a new timex3.
      */
-    public Timex3 newTimex3(String id, List<Span<WF>> mentions) {
+    public Timex3 newTimex3(String id, Span<WF> mentions, String type) {
         idManager.timex3s.update(id);
-        Timex3 newTimex3 = new Timex3(id, mentions);
+        Timex3 newTimex3 = new Timex3(id, type);
+		newTimex3.setSpan(mentions);
         annotationContainer.add(newTimex3);
         return newTimex3;
     }
@@ -547,25 +548,36 @@ public class KAFDocument implements Serializable {
      * @param references different mentions (list of targets) to the same entity.
      * @return a new timex3.
      */
-    public Timex3 newTimex3(List<Span<WF>> mentions) {
+    public Timex3 newTimex3(Span<WF> mentions, String type) {
         String newId = idManager.timex3s.getNext();
-        Timex3 newTimex3 = new Timex3(newId, mentions);
+        Timex3 newTimex3 = new Timex3(newId, type);
+		newTimex3.setSpan(mentions);
         annotationContainer.add(newTimex3);
         return newTimex3;
     }
 
-    /**
-     * Creates a new timeExpressions. It assigns an appropriate ID to it. The Coref is added to the document.
-     *
-     * @param references different mentions (list of targets) to the same entity.
-     * @return a new timex3.
-     */
-    public Timex3 newTimex3(String id) {
-        idManager.timex3s.update(id);
-        Timex3 newTimex3 = new Timex3(id);
-        annotationContainer.add(newTimex3);
-        return newTimex3;
-    }
+	/** Creates a timeExpressions object to load an existing Timex3. It receives it's ID as an argument. The Timex3 is added to the document.
+	 * @param id the ID of the coreference.
+	 * @param references different mentions (list of targets) to the same entity.
+	 * @return a new timex3.
+	 */
+	public Timex3 newTimex3(String id, String type) {
+		idManager.timex3s.update(id);
+		Timex3 newTimex3 = new Timex3(id, type);
+		annotationContainer.add(newTimex3);
+		return newTimex3;
+	}
+
+	/** Creates a new timeExpressions. It assigns an appropriate ID to it. The Coref is added to the document.
+	 * @param references different mentions (list of targets) to the same entity.
+	 * @return a new timex3.
+	 */
+	public Timex3 newTimex3(String type) {
+		String newId = idManager.timex3s.getNext();
+		Timex3 newTimex3 = new Timex3(newId, type);
+		annotationContainer.add(newTimex3);
+		return newTimex3;
+	}
 
     /**
      * Creates a factualitylayer object and add it to the document
@@ -1146,10 +1158,10 @@ public class KAFDocument implements Serializable {
             kaf.insertCoref(corefCopy);
         }
         // TimeExpressions
-        for (Timex3 timex3 : timeExs) {
-            Timex3 timex3Copy = new Timex3(timex3, copiedWFs);
-            kaf.insertTimex3(timex3Copy);
-        }
+//        for (Timex3 timex3 : timeExs) {
+//            Timex3 timex3Copy = new Timex3(timex3, copiedWFs);
+//            kaf.insertTimex3(timex3Copy);
+//        }
         // Properties
         for (Feature property : properties) {
             Feature propertyCopy = new Feature(property, copiedTerms);
@@ -1266,10 +1278,10 @@ public class KAFDocument implements Serializable {
 			this.insertCoref(corefCopy);
 		}
 		// TimeExpressions
-		for (Timex3 timex3 : doc.getTimeExs()) {
-			Timex3 timex3Copy = new Timex3(timex3, copiedWFs);
-			this.insertTimex3(timex3Copy);
-		}
+//		for (Timex3 timex3 : doc.getTimeExs()) {
+//			Timex3 timex3Copy = new Timex3(timex3, copiedWFs);
+//			this.insertTimex3(timex3Copy);
+//		}
 		// Properties
 		for (Feature property : doc.getProperties()) {
 			Feature propertyCopy = new Feature(property, copiedTerms);
