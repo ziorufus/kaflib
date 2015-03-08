@@ -578,7 +578,7 @@ public class KAFDocument implements Serializable {
         annotationContainer.add(factuality);
         return factuality;
     }
-    
+
     /**
      * Creates a LinkedEntity object and add it to the document, using the supplied ID.
      *
@@ -1084,7 +1084,7 @@ public class KAFDocument implements Serializable {
 
     public List<Predicate> getPredicatesBySent(Integer sent) {
         List<Predicate> result = this.annotationContainer.predicatesIndexedBySent.get(sent);
-        return result != null ? result : Collections.<Predicate>emptyList(); 
+        return result != null ? result : Collections.<Predicate>emptyList();
     }
 
     public List<Predicate> getPredicatesByPara(Integer para) {
@@ -1719,7 +1719,7 @@ public class KAFDocument implements Serializable {
     public void removeAnnotation(Object annotation) {
         this.annotationContainer.removeAnnotation(annotation);
     }
-    
+
     /**
      * Converts a List into a Span
      */
@@ -2039,5 +2039,14 @@ public class KAFDocument implements Serializable {
     public List<Factuality> getFactualities() {
         return annotationContainer.getFactualities();
     }
-    
+
+	public static void main(String[] args) {
+		File file = new File(args[0]);
+
+		try {
+			KAFDocument document = KAFDocument.createFromFile(file);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+	}
 }

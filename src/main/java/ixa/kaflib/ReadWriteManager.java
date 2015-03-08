@@ -291,7 +291,7 @@ class ReadWriteManager {
 					String headId = getAttribute("head", chunkElem);
 					Term chunkHead = termIndex.get(headId);
 					if (chunkHead == null) {
-						throw new KAFNotValidException("Term " + headId + " not found when loading chunk " + chunkId);
+						throw new KAFNotValidException("Term " + headId + " not found when loading chunk " + chunkId + " (head not found)");
 					}
 					Element spanElem = chunkElem.getChild("span");
 					if (spanElem == null) {
@@ -304,7 +304,7 @@ class ReadWriteManager {
 						boolean isHead = isHead(chunksTermElem);
 						Term targetTerm = termIndex.get(termId);
 						if (targetTerm == null) {
-							throw new KAFNotValidException("Term " + termId + " not found when loading chunk " + chunkId);
+							throw new KAFNotValidException("Term " + termId + " not found when loading chunk " + chunkId + " (target term not found)");
 						}
 						span.addTarget(targetTerm, ((targetTerm == chunkHead) || isHead));
 					}
