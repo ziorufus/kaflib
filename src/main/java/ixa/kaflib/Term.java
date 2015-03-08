@@ -9,7 +9,7 @@ import java.util.List;
 
 
 /** Class for representing terms. Terms refer to previous word forms (and groups multi-words) and attach lemma, part of speech, synset and name entity information. */
-public class Term implements Serializable {
+public class Term extends IReferable implements Serializable {
 
     /** Term's ID (required) */
     private String tid;
@@ -560,5 +560,5 @@ public class Term implements Serializable {
         }
       
     };
-    
+
 }
