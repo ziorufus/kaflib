@@ -11,8 +11,15 @@ public class Coref implements Serializable {
     /** Coreference's ID (required) */
     private String coid;
 
+    /** (optional) */
+    private String type;
+
     /** Mentions to the same entity (at least one required) */
     private List<Span<Term>> mentions;
+
+    /** External references (optional) */
+    private List<ExternalRef> externalReferences;
+
 
     Coref(String coid, List<Span<Term>> mentions) {
 	if (mentions.size() < 1) {
@@ -23,6 +30,7 @@ public class Coref implements Serializable {
 	}
 	this.coid = coid;
 	this.mentions = mentions;
+	this.externalReferences = new ArrayList<ExternalRef>();
     }
 
     Coref(Coref coref, HashMap<String, Term> terms) {
@@ -57,6 +65,30 @@ public class Coref implements Serializable {
 
     void setId(String id) {
 	this.coid = id;
+    }
+
+    public boolean hasType() {
+	return this.type != null;
+    }
+
+    public String getType() {
+	return this.type;
+    }
+
+    public void setType(String type) {
+	this.type = type;
+    }
+
+    public List<ExternalRef> getExternalRefs() {
+	return externalReferences;
+    }
+
+    public void addExternalRef(ExternalRef externalRef) {
+	externalReferences.add(externalRef);
+    }
+
+    public void addExternalRefs(List<ExternalRef> externalRefs) {
+	externalReferences.addAll(externalRefs);
     }
 
     /** Returns the term targets of the first span. When targets of other spans are needed getReferences() method should be used. */ 
