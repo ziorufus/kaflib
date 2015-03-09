@@ -547,18 +547,15 @@ class AnnotationContainer implements Serializable {
 		//this.indexBySent(coref, coref.getSpans().get(0).getTargets().get(0).getSent(), this.corefsIndexedBySent);
 	}
 
-	/**
-	 * Adds a timeExpression to the container
-	 */
+	/** Adds a timeExpression to the container */
 	void add(Timex3 timex3) {
 		timeExpressions.add(timex3);
 	/* Index by terms */
-		if (timex3.getSpan().getTargets() != null) {
+		if(timex3.hasSpan()){
 			for (WF wf : timex3.getSpan().getTargets()) {
 				indexAnnotation(timex3, wf.getId(), timeExsIndexedByWF);
 			}
 		}
-		indexBySent(timex3, timex3.getSpan().getTargets().get(0).getSent(), timeExsIndexedBySent);
 	}
 
 	/**

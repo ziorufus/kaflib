@@ -22,7 +22,15 @@ public class Predicate extends IReferable implements Serializable {
 	    this.flags = new ArrayList<String>();
 	}
 
-	public String getId() {
+		@Override
+		public String toString() {
+			return "Role{" +
+					semRole + " -> " +
+					span.getStr() +
+					'}';
+		}
+
+		public String getId() {
 	    return this.rid;
 	}
 

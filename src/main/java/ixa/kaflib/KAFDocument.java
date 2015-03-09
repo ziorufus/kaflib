@@ -1003,6 +1003,10 @@ public class KAFDocument implements Serializable {
         return annotationContainer.getChunks();
     }
 
+	public List<LinkedEntity> getLinkedEntities() {
+		return annotationContainer.getLinkedEntities();
+	}
+
     /**
      * Returns a list with all entities in the document
      */
