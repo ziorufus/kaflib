@@ -101,6 +101,7 @@ class ReadWriteManager {
 		HashMap<String, Term> termIndex = new HashMap<String, Term>();
 		HashMap<String, Relational> relationalIndex = new HashMap<String, Relational>();
 		HashMap<String, Timex3> timexIndex = new HashMap<String, Timex3>();
+		HashMap<String, Predicate> predicateIndex = new HashMap<String, Predicate>();
 
 		Element rootElem = dom.getRootElement();
 		String lang = getAttribute("lang", rootElem, Namespace.XML_NAMESPACE);
@@ -469,6 +470,37 @@ class ReadWriteManager {
 					timexIndex.put(timex3.getId(), timex3);
 				}
 			}
+			else if (elem.getName().equals("temporalRelations")) {
+				List<Element> tLinkElems = elem.getChildren("tlink");
+				for (Element tLinkElem : tLinkElems) {
+					String tlid = getAttribute("id", tLinkElem);
+					String fromId = getAttribute("from", tLinkElem);
+					String toId = getAttribute("to", tLinkElem);
+					String fromType = getAttribute("fromType", tLinkElem);
+					String toType = getAttribute("toType", tLinkElem);
+					String relType = getAttribute("relType", tLinkElem);
+					TLinkReferable from = fromType.equals("event")
+							? predicateIndex.get(fromId) : timexIndex.get(fromId);
+					TLinkReferable to = toType.equals("event")
+							? predicateIndex.get(toId) : timexIndex.get(toId);
+					TLink tLink = kaf.newTLink(tlid, from, to, relType);
+				}
+			}
+			else if (elem.getName().equals("causalRelations")) {
+				List<Element> clinkElems = elem.getChildren("clink");
+				for (Element clinkElem : clinkElems) {
+					String clid = getAttribute("id", clinkElem);
+					String fromId = getAttribute("from", clinkElem);
+					String toId = getAttribute("to", clinkElem);
+					String relType = getOptAttribute("relType", clinkElem);
+					Predicate from = predicateIndex.get(fromId);
+					Predicate to = predicateIndex.get(toId);
+					CLink clink = kaf.newCLink(clid, from, to);
+					if (relType != null) {
+						clink.setRelType(relType);
+					}
+				}
+			}
 			else if (elem.getName().equals("features")) {
 				Element propertiesElem = elem.getChild("properties");
 				Element categoriesElem = elem.getChild("categories");
@@ -702,12 +734,6 @@ class ReadWriteManager {
 					if (confidence != null) {
 						newPredicate.setConfidence(Float.valueOf(confidence));
 					}
-					String flags = getOptAttribute("flags", predicateElem);
-					if (flags != null) {
-					    for (String flag : flags.split(",")) {
-					        newPredicate.addFlag(flag);
-					    }
-					}
 					List<Element> roleElems = predicateElem.getChildren("role");
 					for (Element roleElem : roleElems) {
 						String rid = getAttribute("id", roleElem);
@@ -732,14 +758,9 @@ class ReadWriteManager {
 							List<ExternalRef> externalRefs = getExternalReferences(rExternalReferencesElems.get(0), kaf);
 							newRole.addExternalRefs(externalRefs);
 						}
-                        String roleFlags = getOptAttribute("flags", roleElem);
-                        if (roleFlags != null) {
-                            for (String roleFlag : roleFlags.split(",")) {
-                                newRole.addFlag(roleFlag);
-                            }
-                        }
 						newPredicate.addRole(newRole);
 					}
+					predicateIndex.put(newPredicate.getId(), newPredicate);
 				}
 			}
 			else if (elem.getName().equals("constituency")) {
@@ -804,7 +825,7 @@ class ReadWriteManager {
 			else if (elem.getName().equals("factualitylayer")) {
 			    for (Element factElem : elem.getChildren("factvalue")) {
 			        String id = getAttribute("id", factElem);
-			        WF wf = wfIndex.get(id);
+					WF wf = wfIndex.get(id);
 			        List<Term> terms = kaf.getTermsByWFs(Collections.singletonList(wf));
 			        if (terms.isEmpty()) {
 			            System.err.println("Cannot detect term for factvalue ID " + id);
@@ -820,7 +841,7 @@ class ReadWriteManager {
 			}
 			else if (elem.getName().equals("linkedEntities")) {
                 for (Element entityElem : elem.getChildren("linkedEntity")) {
-                    String id = getAttribute("id", entityElem);
+					String id = getAttribute("id", entityElem);
                     Span<WF> span = KAFDocument.newWFSpan();
                     List<Element> targetElems = entityElem.getChild("span").getChildren();
                     if (targetElems.size() < 1) {
@@ -1885,6 +1906,48 @@ class ReadWriteManager {
 				}
 			}
 			root.addContent(constituentsElem);
+		}
+
+		List<TLink> tLinks = annotationContainer.getTLinks();
+		if (tLinks.size() > 0) {
+			Element tLinksElem = new Element("temporalRelations");
+			for (TLink tLink : tLinks) {
+				Comment tLinkComment = new Comment
+						(tLink.getRelType() + "(" + tLink.getFrom().getId() + ", " + tLink.getTo().getId() + ")");
+				tLinksElem.addContent(tLinkComment);
+				Element tLinkElem = new Element("tlink");
+				tLinkElem.setAttribute("id", tLink.getId());
+				tLinkElem.setAttribute("from", tLink.getFrom().getId());
+				tLinkElem.setAttribute("to", tLink.getTo().getId());
+				tLinkElem.setAttribute("fromType", tLink.getFromType());
+				tLinkElem.setAttribute("toType", tLink.getToType());
+				tLinkElem.setAttribute("relType", tLink.getRelType());
+				tLinksElem.addContent(tLinkElem);
+			}
+			root.addContent(tLinksElem);
+		}
+
+		List<CLink> cLinks = annotationContainer.getCLinks();
+		if (cLinks.size() > 0) {
+			Element cLinksElem = new Element("causalRelations");
+			for (CLink cLink : cLinks) {
+				String commentStr = "";
+				if (cLink.hasRelType()) {
+					commentStr += cLink.getRelType();
+				}
+				commentStr += "(" + cLink.getFrom().getId() + ", " + cLink.getTo().getId() + ")";
+				Comment cLinkComment = new Comment(commentStr);
+				cLinksElem.addContent(cLinkComment);
+				Element cLinkElem = new Element("clink");
+				cLinkElem.setAttribute("id", cLink.getId());
+				cLinkElem.setAttribute("from", cLink.getFrom().getId());
+				cLinkElem.setAttribute("to", cLink.getTo().getId());
+				if (cLink.hasRelType()) {
+					cLinkElem.setAttribute("relType", cLink.getRelType());
+				}
+				cLinksElem.addContent(cLinkElem);
+			}
+			root.addContent(cLinksElem);
 		}
 
 		List<Element> unknownLayers = annotationContainer.getUnknownLayers();

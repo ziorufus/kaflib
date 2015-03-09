@@ -579,7 +579,36 @@ public class KAFDocument implements Serializable {
 		return newTimex3;
 	}
 
-    /**
+	public TLink newTLink(String id, TLinkReferable from, TLinkReferable to, String relType) {
+		idManager.tlinks.update(id);
+		TLink newTLink = new TLink(id, from, to, relType);
+		annotationContainer.add(newTLink);
+		return newTLink;
+	}
+
+	public TLink newTLink(TLinkReferable from, TLinkReferable to, String relType) {
+		String newId = idManager.tlinks.getNext();
+		TLink newTLink = new TLink(newId, from, to, relType);
+		annotationContainer.add(newTLink);
+		return newTLink;
+	}
+
+	public CLink newCLink(String id, Predicate from, Predicate to) {
+		idManager.clinks.update(id);
+		CLink newCLink = new CLink(id, from, to);
+		annotationContainer.add(newCLink);
+		return newCLink;
+	}
+
+	public CLink newCLink(Predicate from, Predicate to) {
+		String newId = idManager.clinks.getNext();
+		CLink newCLink = new CLink(newId, from, to);
+		annotationContainer.add(newCLink);
+		return newCLink;
+	}
+
+
+	/**
      * Creates a factualitylayer object and add it to the document
      *
      * @param term the Term of the coreference.
@@ -1022,7 +1051,15 @@ public class KAFDocument implements Serializable {
         return annotationContainer.getTimeExs();
     }
 
-    /**
+	public List<TLink> getTLinks() {
+		return annotationContainer.getTLinks();
+	}
+
+	public List<CLink> getCLinks() {
+		return annotationContainer.getCLinks();
+	}
+
+	/**
      * Returns a list with all relations in the document
      */
     public List<Feature> getProperties() {
