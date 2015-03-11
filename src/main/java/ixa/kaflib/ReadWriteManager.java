@@ -398,6 +398,15 @@ class ReadWriteManager {
 						mentions.add(span);
 					}
 					Coref newCoref = kaf.newCoref(coId, mentions);
+					String corefType = getOptAttribute("type", corefElem);
+					if (corefType != null) {
+						newCoref.setType(corefType);
+					}
+					List<Element> externalReferencesElems = corefElem.getChildren("externalReferences");
+					if (externalReferencesElems.size() > 0) {
+						List<ExternalRef> externalRefs = getExternalReferences(externalReferencesElems.get(0), kaf);
+						newCoref.addExternalRefs(externalRefs);
+					}
 				}
 			}
 			else if (elem.getName().equals("timeExpressions")) {
@@ -768,6 +777,8 @@ class ReadWriteManager {
 				for (Element treeElem : treeElems) {
 					HashMap<String, TreeNode> treeNodes = new HashMap<String, TreeNode>();
 					HashMap<String, Boolean> rootNodes = new HashMap<String, Boolean>();
+					Integer sentence = Integer.parseInt(treeElem.getAttribute("sentence").getValue());
+
 					// Terminals
 					List<Element> terminalElems = treeElem.getChildren("t");
 					for (Element terminalElem : terminalElems) {
@@ -817,7 +828,7 @@ class ReadWriteManager {
 					for (Map.Entry<String, Boolean> areRoot : rootNodes.entrySet()) {
 						if (areRoot.getValue()) {
 							TreeNode rootNode = treeNodes.get(areRoot.getKey());
-							kaf.newConstituent(rootNode);
+							kaf.newConstituent(rootNode, sentence);
 						}
 					}
 				}
@@ -1376,6 +1387,9 @@ class ReadWriteManager {
 			for (Coref coref : corefs) {
 				Element corefElem = new Element("coref");
 				corefElem.setAttribute("id", coref.getId());
+				if (coref.hasType()) {
+					corefElem.setAttribute("type", coref.getType());
+				}
 				for (Span<Term> span : coref.getSpans()) {
 					Comment spanComment = new Comment(coref.getSpanStr(span));
 					corefElem.addContent(spanComment);
@@ -1389,6 +1403,11 @@ class ReadWriteManager {
 						spanElem.addContent(targetElem);
 					}
 					corefElem.addContent(spanElem);
+				}
+				List<ExternalRef> externalReferences = coref.getExternalRefs();
+				if (externalReferences.size() > 0) {
+					Element externalReferencesElem = externalReferencesToDOM(externalReferences);
+					corefElem.addContent(externalReferencesElem);
 				}
 				corefsElem.addContent(corefElem);
 			}

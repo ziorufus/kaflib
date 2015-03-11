@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**  */
 public class Tree implements Serializable { //?
 
-    private static final String HEAD_MARK = "=H";
+    public static final String HEAD_MARK = "=H";
 
     /** Tree's root node */
     private TreeNode root;

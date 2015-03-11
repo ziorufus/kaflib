@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 
 /** Class for representing word forms. These are the result of the tokenization process. */
-public class WF extends IReferable implements Serializable{
+	public class WF extends IReferable implements Serializable{
 
     private AnnotationContainer annotationContainer;
 
