@@ -59,6 +59,7 @@ public class Term extends IReferable implements Serializable {
 
 	private String supersenseTag;
 	private String wordnetSense;
+	private String bbnTag;
 
 	public String getSupersenseTag() {
 		return supersenseTag;
@@ -82,6 +83,18 @@ public class Term extends IReferable implements Serializable {
 
 	public boolean hasWordnetSense() {
 		return wordnetSense != null;
+	}
+	
+	public String getBBNTag() {
+	    return this.bbnTag;
+	}
+
+    public void setBBNTag(String bbnTag) {
+	    this.bbnTag = bbnTag;
+    }
+
+    public boolean hasBBNTag() {
+        return bbnTag != null;
 	}
 
 	/** The term layer represents sentiment information which is context-independent and that can be found in a sentiment lexicon.

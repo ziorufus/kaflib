@@ -954,6 +954,10 @@ class ReadWriteManager {
 		if (wordnetSense != null) {
 		    newTerm.setWordnetSense(wordnetSense);
 		}
+		String bbnTag = getOptAttribute("bbn", termElem);
+		if (bbnTag != null) {
+		    newTerm.setBBNTag(bbnTag);
+		}
 		String pos = getOptAttribute("pos", termElem);
 		if (pos != null) {
 			newTerm.setPos(pos);
@@ -1998,6 +2002,9 @@ class ReadWriteManager {
 		}
 		if (term.hasWordnetSense()) {
 			termElem.setAttribute("wordnet", term.getWordnetSense());
+		}
+		if (term.hasBBNTag()) {
+		    termElem.setAttribute("bbn", term.getBBNTag());
 		}
 		if (term.hasPos()) {
 			termElem.setAttribute("pos", term.getPos());

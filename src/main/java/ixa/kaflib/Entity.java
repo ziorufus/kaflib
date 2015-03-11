@@ -131,6 +131,15 @@ public class Entity implements Relational, Serializable {
 	this.references.add(span);
     }
 
+    public ExternalRef getExternalRef(String resource) {
+    for (ExternalRef ref : externalReferences) {
+        if (ref.getResource().equalsIgnoreCase(resource)) {
+            return ref;
+        }
+    }
+    return null;
+    }
+
     public List<ExternalRef> getExternalRefs() {
 	return externalReferences;
     }

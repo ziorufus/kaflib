@@ -76,6 +76,16 @@ public class Predicate extends IReferable implements Serializable {
 	    }
 	    return str;
 	}
+	
+	public ExternalRef getExternalRef(String resource) {
+	    for (ExternalRef ref : externalReferences) {
+	        if (ref.getResource().equalsIgnoreCase(resource)) {
+	            return ref;
+	        }
+	    }
+	    return null;
+    }
+
 
 	public List<ExternalRef> getExternalRefs() {
 	    return externalReferences;
@@ -199,6 +209,15 @@ public class Predicate extends IReferable implements Serializable {
 	    str += term.getStr();
 	}
 	return str;
+    }
+    
+    public ExternalRef getExternalRef(String resource) {
+    for (ExternalRef ref : externalReferences) {
+        if (ref.getResource().equalsIgnoreCase(resource)) {
+            return ref;
+        }
+    }
+    return null;
     }
 
     public List<ExternalRef> getExternalRefs() {
