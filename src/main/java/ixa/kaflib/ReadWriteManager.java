@@ -80,8 +80,8 @@ class ReadWriteManager {
 			out.write(kafToStr(kaf));
 			out.flush();
 		} catch (Exception e) {
-			System.out.println(e);
-		}
+		    e.printStackTrace();
+     	}
 	}
 
 	/**
