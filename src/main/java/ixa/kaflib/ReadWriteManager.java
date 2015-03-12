@@ -66,6 +66,7 @@ class ReadWriteManager {
 			Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF8"));
 			out.write(kafToStr(kaf));
 			out.flush();
+			out.close();
 		} catch (Exception e) {
 			System.out.println("Error writing to file");
 		}
