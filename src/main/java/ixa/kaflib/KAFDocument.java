@@ -1144,7 +1144,17 @@ public class KAFDocument implements Serializable {
         return this.annotationContainer.getLayerByPara(para, this.annotationContainer.predicatesIndexedBySent);
     }
 
-    /**
+	public List<Tree> getConstituentsBySent(Integer sent) {
+		Map<Integer, List<Tree>> typeTreeIndex = this.annotationContainer.treesIndexedBySent;
+		if (typeTreeIndex == null) {
+			return new ArrayList<Tree>();
+		}
+		List<Tree> typeTrees = typeTreeIndex.get(sent);
+		return (typeTrees == null) ? new ArrayList<Tree>() : typeTrees;
+	}
+
+
+	/**
      * Copies the annotations to another KAF document
      */
     private void copyAnnotationsToKAF(KAFDocument kaf,
