@@ -17,3 +17,4 @@ octave-core
 *.settings
 kaflib.iml
 diff
+*.iml

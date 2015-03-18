@@ -689,13 +689,22 @@ class AnnotationContainer implements Serializable {
 	
 	void add(Tree tree, Integer sent) {
 		trees.add(tree);
+
+		if (sent == null) {
+			TreeNode currentNode = tree.getRoot();
+			while (!currentNode.isTerminal()) {
+				currentNode = ((NonTerminal) currentNode).getChildren().get(0);
+			}
+			sent = ((Terminal) currentNode).getSpan().getTargets().get(0).getSent();
+		}
+
 		if (sent != null) {
 			List<Tree> sentTrees = treesIndexedBySent.get(sent);
 			if (sentTrees == null) {
 				sentTrees = new ArrayList<Tree>();
 				treesIndexedBySent.put(sent, sentTrees);
 			}
-		sentTrees.add(tree);
+			sentTrees.add(tree);
 		}
 	}
 	

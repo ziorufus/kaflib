@@ -17,7 +17,7 @@ class IdManager implements Serializable {
 	public GenericId chunks = new GenericId("c");
 	public GenericId entities = new GenericId("e");
 	public GenericId corefs = new GenericId("co");
-	public GenericId timex3s = new GenericId("tx");
+	public GenericId timex3s = new GenericId("tmx");
 	public GenericId linkedentities = new GenericId("le");
 	public GenericId properties = new GenericId("p");
 	public GenericId categories = new GenericId("cat");

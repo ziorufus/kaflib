@@ -778,7 +778,10 @@ class ReadWriteManager {
 				for (Element treeElem : treeElems) {
 					HashMap<String, TreeNode> treeNodes = new HashMap<String, TreeNode>();
 					HashMap<String, Boolean> rootNodes = new HashMap<String, Boolean>();
-					Integer sentence = Integer.parseInt(treeElem.getAttribute("sentence").getValue());
+					Integer sentence = null;
+					if (treeElem.getAttribute("sentence") != null) {
+						sentence = Integer.parseInt(treeElem.getAttribute("sentence").getValue());
+					}
 
 					// Terminals
 					List<Element> terminalElems = treeElem.getChildren("t");
@@ -1500,19 +1503,23 @@ class ReadWriteManager {
 		if (factualities.size() > 0) {
 			Element factsElement = new Element("factualitylayer");
 			for (Factuality f : factualities) {
-				Element fact = new Element("factvalue");
-				fact.setAttribute("id", f.getId());
-				fact.setAttribute("prediction", f.getMaxPart().getPrediction());
-				fact.setAttribute("confidence", Double.toString(f.getMaxPart().getConfidence()));
+				try {
+					Element fact = new Element("factvalue");
+					fact.setAttribute("id", f.getId());
+					fact.setAttribute("prediction", f.getMaxPart().getPrediction());
+					fact.setAttribute("confidence", Double.toString(f.getMaxPart().getConfidence()));
 
-				for (Factuality.FactualityPart p : f.getFactualityParts()) {
-					Element factPartial = new Element("factuality");
-					factPartial.setAttribute("prediction", p.getPrediction());
-					factPartial.setAttribute("confidence", Double.toString(p.getConfidence()));
-					fact.addContent(factPartial);
+					for (Factuality.FactualityPart p : f.getFactualityParts()) {
+						Element factPartial = new Element("factuality");
+						factPartial.setAttribute("prediction", p.getPrediction());
+						factPartial.setAttribute("confidence", Double.toString(p.getConfidence()));
+						fact.addContent(factPartial);
+					}
+
+					factsElement.addContent(fact);
+				} catch (Exception e) {
+					// continue
 				}
-
-				factsElement.addContent(fact);
 			}
 			root.addContent(factsElement);
 		}
@@ -1862,7 +1869,11 @@ class ReadWriteManager {
 			Element constituentsElem = new Element("constituency");
 			for (Tree tree : constituents) {
 				Element treeElem = new Element("tree");
-				treeElem.setAttribute("sentence", tree.getSentence().toString());
+				try {
+					treeElem.setAttribute("sentence", tree.getSentence().toString());
+				} catch (Exception e) {
+					// continue
+				}
 				constituentsElem.addContent(treeElem);
 				List<NonTerminal> nonTerminals = new LinkedList<NonTerminal>();
 				List<Terminal> terminals = new LinkedList<Terminal>();
