@@ -41,7 +41,19 @@ public class KAFDocument implements Serializable {
 
         private FileDesc() {
         }
-    }
+
+		@Override
+		public String toString() {
+			return "FileDesc{" +
+					"author='" + author + '\'' +
+					", title='" + title + '\'' +
+					", filename='" + filename + '\'' +
+					", filetype='" + filetype + '\'' +
+					", pages=" + pages +
+					", creationtime='" + creationtime + '\'' +
+					'}';
+		}
+	}
 
     public class Public implements Serializable {
         public String publicId;
@@ -96,13 +108,9 @@ public class KAFDocument implements Serializable {
      *
      * @param file an existing KAF file to be loaded into the library.
      */
-    public static KAFDocument createFromFile(File file) throws IOException {
+    public static KAFDocument createFromFile(File file) throws IOException, JDOMException {
         KAFDocument kaf = null;
-        try {
-            kaf = ReadWriteManager.load(file);
-        } catch (JDOMException e) {
-            e.printStackTrace();
-        }
+		kaf = ReadWriteManager.load(file);
         return kaf;
     }
 

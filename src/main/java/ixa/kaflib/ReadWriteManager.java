@@ -90,6 +90,7 @@ class ReadWriteManager {
 	 */
 	static String kafToStr(KAFDocument kaf) {
 		XMLOutputter out = new XMLOutputter(Format.getPrettyFormat().setLineSeparator(LineSeparator.UNIX));
+		out.getFormat().setTextMode(Format.TextMode.PRESERVE);
 		Document jdom = KAFToDOM(kaf);
 		return out.outputString(jdom);
 	}
@@ -600,6 +601,10 @@ class ReadWriteManager {
 				for (Element opinionElem : opinionElems) {
 					String opinionId = getAttribute("id", opinionElem);
 					Opinion opinion = kaf.newOpinion(opinionId);
+					String label = getAttribute("label", opinionElem);
+					if (label != null) {
+						opinion.setLabel(label);
+					}
 					Element opinionHolderElem = opinionElem.getChild("opinion_holder");
 					if (opinionHolderElem != null) {
 						Span<Term> span = kaf.newTermSpan();
@@ -1077,6 +1082,10 @@ class ReadWriteManager {
 		String confidence = getOptAttribute("confidence", externalRefElem);
 		if (confidence != null) {
 			newExternalRef.setConfidence(Float.valueOf(confidence));
+		}
+		String source = getAttribute("source", externalRefElem);
+		if (source != null) {
+			newExternalRef.setSource(source);
 		}
 		List<Element> subRefElems = externalRefElem.getChildren("externalRef");
 		if (subRefElems.size() > 0) {
@@ -1663,6 +1672,9 @@ class ReadWriteManager {
 			for (Opinion opinion : opinions) {
 				Element opinionElem = new Element("opinion");
 				opinionElem.setAttribute("id", opinion.getId());
+				if (opinion.getLabel() != null) {
+					opinionElem.setAttribute("label", opinion.getLabel());
+				}
 				Opinion.OpinionHolder holder = opinion.getOpinionHolder();
 				if (holder != null) {
 					Element opinionHolderElem = new Element("opinion_holder");
@@ -2115,6 +2127,9 @@ class ReadWriteManager {
 		externalRefElem.setAttribute("reference", externalRef.getReference());
 		if (externalRef.hasConfidence()) {
 			externalRefElem.setAttribute("confidence", Float.toString(externalRef.getConfidence()));
+		}
+		if (externalRef.getSource() != null) {
+			externalRefElem.setAttribute("source", externalRef.getSource());
 		}
 		if (externalRef.hasExternalRef()) {
 			Element subExternalRefElem = externalRefToDOM(externalRef.getExternalRef());

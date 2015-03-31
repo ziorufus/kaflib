@@ -11,7 +11,21 @@ import java.util.List;
 /** Class for representing terms. Terms refer to previous word forms (and groups multi-words) and attach lemma, part of speech, synset and name entity information. */
 public class Term extends IReferable implements Serializable {
 
-    /** Term's ID (required) */
+	@Override
+	public String toString() {
+		return toString(true);
+	}
+
+	public String toString(boolean trimmed) {
+		if (trimmed) {
+			return getForm().trim();
+		}
+		else {
+			return getForm();
+		}
+	}
+
+	/** Term's ID (required) */
     private String tid;
 
     /** Type of the term (optional). Currently, 2 values are possible: open and close. */
@@ -84,7 +98,7 @@ public class Term extends IReferable implements Serializable {
 	public boolean hasWordnetSense() {
 		return wordnetSense != null;
 	}
-	
+
 	public String getBBNTag() {
 	    return this.bbnTag;
 	}
@@ -290,7 +304,7 @@ public class Term extends IReferable implements Serializable {
 	    this.sentiment = new Sentiment(term.sentiment);
 	}
 	// Copy components and head
-	HashMap<String, Term> newComponents = 
+	HashMap<String, Term> newComponents =
 	    new HashMap<String, Term>();
 	this.components = new ArrayList<Term>();
 	for (Term component : term.components) {
@@ -394,7 +408,7 @@ public class Term extends IReferable implements Serializable {
     }
 
     // MODIFIED BY FRANCESCO
-    
+
     public String getForm() {
         StringBuilder builder = new StringBuilder();
         List<WF> sortedWFs = new ArrayList<WF>(span.getTargets());
@@ -424,7 +438,7 @@ public class Term extends IReferable implements Serializable {
 	   if (strValue.startsWith("-") || strValue.endsWith("-")) {
 	       strValue = strValue.replace("-", " - ");
 	   }
-	   else if (strValue.contains("--")) { 
+	   else if (strValue.contains("--")) {
 	       strValue = strValue.replace("--", "-");
 	   }
 	   else {
@@ -538,7 +552,7 @@ public class Term extends IReferable implements Serializable {
     }
 
     // ADDED BY FRANCESCO
-    
+
     public int getOffset() {
         int offset = Integer.MAX_VALUE;
         for (WF word : this.getWFs()) {
@@ -549,29 +563,30 @@ public class Term extends IReferable implements Serializable {
         }
         return offset;
     }
-    
+
     public int getLength() {
         int startOffset = Integer.MAX_VALUE;
         int endOffset = Integer.MIN_VALUE;
         for (WF word : this.getWFs()) {
             int wordOffset = word.getOffset();
+			int length = word.getLength();
             if (wordOffset < startOffset) {
                 startOffset = wordOffset;
             }
-            if (wordOffset > endOffset) {
-                endOffset = wordOffset;
+            if (wordOffset + length > endOffset) {
+                endOffset = wordOffset + length;
             }
         }
         return endOffset - startOffset;
     }
-    
+
     public static final Comparator<Term> OFFSET_COMPARATOR = new Comparator<Term>() {
-      
+
         @Override
         public int compare(Term first, Term second) {
             return first.getOffset() - second.getOffset();
         }
-      
+
     };
 
 }
