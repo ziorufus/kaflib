@@ -74,6 +74,7 @@ public class Opinion implements Serializable {
 
 	public static class OpinionTarget implements Serializable {
 		private Span<Term> span;
+		private String type;
 
 		OpinionTarget(Span<Term> span) {
 			this.span = span;
@@ -98,6 +99,18 @@ public class Opinion implements Serializable {
 			else {
 				this.span = new Span<Term>(copiedTargets);
 			}
+		}
+
+		public boolean hasType() {
+			return type != null;
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		public void setType(String type) {
+			this.type = type;
 		}
 
 		public List<Term> getTerms() {

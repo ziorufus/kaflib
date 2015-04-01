@@ -90,7 +90,7 @@ class ReadWriteManager {
 	 */
 	static String kafToStr(KAFDocument kaf) {
 		XMLOutputter out = new XMLOutputter(Format.getPrettyFormat().setLineSeparator(LineSeparator.UNIX));
-		out.getFormat().setTextMode(Format.TextMode.PRESERVE);
+//		out.getFormat().setTextMode(Format.TextMode.PRESERVE);
 		Document jdom = KAFToDOM(kaf);
 		return out.outputString(jdom);
 	}
@@ -631,6 +631,10 @@ class ReadWriteManager {
 					if (opinionTargetElem != null) {
 						Span<Term> span = kaf.newTermSpan();
 						Opinion.OpinionTarget opinionTarget = opinion.createOpinionTarget(span);
+						String otType = getOptAttribute("type", opinionTargetElem);
+						if (otType != null) {
+							opinionTarget.setType(otType);
+						}
 						Element spanElem = opinionTargetElem.getChild("span");
 						if (spanElem != null) {
 							List<Element> targetElems = spanElem.getChildren("target");
@@ -1079,14 +1083,19 @@ class ReadWriteManager {
 		String resource = getAttribute("resource", externalRefElem);
 		String references = getAttribute("reference", externalRefElem);
 		ExternalRef newExternalRef = kaf.newExternalRef(resource, references);
-		String confidence = getOptAttribute("confidence", externalRefElem);
-		if (confidence != null) {
+
+		try {
+			String confidence = getOptAttribute("confidence", externalRefElem);
 			newExternalRef.setConfidence(Float.valueOf(confidence));
+		} catch (Exception e) {
 		}
-		String source = getAttribute("source", externalRefElem);
-		if (source != null) {
+
+		try {
+			String source = getAttribute("source", externalRefElem);
 			newExternalRef.setSource(source);
+		} catch (Exception e) {
 		}
+
 		List<Element> subRefElems = externalRefElem.getChildren("externalRef");
 		if (subRefElems.size() > 0) {
 			Element subRefElem = subRefElems.get(0);
@@ -1702,6 +1711,9 @@ class ReadWriteManager {
 				Opinion.OpinionTarget opTarget = opinion.getOpinionTarget();
 				if (opTarget != null) {
 					Element opinionTargetElem = new Element("opinion_target");
+					if (opTarget.hasType()) {
+						opinionTargetElem.setAttribute("type", opTarget.getType());
+					}
 					Comment comment = new Comment(opinion.getSpanStr(opinion.getOpinionTarget().getSpan()));
 					opinionTargetElem.addContent(comment);
 					List<Term> targets = opTarget.getTerms();
