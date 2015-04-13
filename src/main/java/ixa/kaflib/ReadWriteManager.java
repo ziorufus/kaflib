@@ -617,6 +617,10 @@ class ReadWriteManager {
 					} catch (Exception e) {
 						// ignored
 					}
+					List<Element> opinionExternalRefs = opinionElem.getChildren("externalReferences");
+                    if (opinionExternalRefs.size() > 0) {
+                        opinion.addExternalRefs(getExternalReferences(opinionExternalRefs.get(0), kaf));
+                    }
 					Element opinionHolderElem = opinionElem.getChild("opinion_holder");
 					if (opinionHolderElem != null) {
 						Span<Term> span = kaf.newTermSpan();
@@ -638,6 +642,10 @@ class ReadWriteManager {
 								span.addTarget(targetTerm, isHead);
 							}
 						}
+	                    List<Element> holderExternalRefs = opinionHolderElem.getChildren("externalReferences");
+	                    if (holderExternalRefs.size() > 0) {
+	                        opinionHolder.addExternalRefs(getExternalReferences(holderExternalRefs.get(0), kaf));
+	                    }
 					}
 					Element opinionTargetElem = opinionElem.getChild("opinion_target");
 					if (opinionTargetElem != null) {
@@ -660,6 +668,10 @@ class ReadWriteManager {
 								span.addTarget(targetTerm, isHead);
 							}
 						}
+                        List<Element> targetExternalRefs = opinionTargetElem.getChildren("externalReferences");
+                        if (targetExternalRefs.size() > 0) {
+                            opinionTarget.addExternalRefs(getExternalReferences(targetExternalRefs.get(0), kaf));
+                        }
 					}
 					Element opinionExpressionElem = opinionElem.getChild("opinion_expression");
 					if (opinionExpressionElem != null) {
@@ -699,6 +711,11 @@ class ReadWriteManager {
 								span.addTarget(targetTerm, isHead);
 							}
 						}
+						
+                        List<Element> expressionExternalRefs = opinionExpressionElem.getChildren("externalReferences");
+                        if (expressionExternalRefs.size() > 0) {
+                            opinionExpression.addExternalRefs(getExternalReferences(expressionExternalRefs.get(0), kaf));
+                        }
 					}
 				}
 			}
@@ -1701,6 +1718,9 @@ class ReadWriteManager {
 				if (opinion.getLabel() != null) {
 					opinionElem.setAttribute("label", opinion.getLabel());
 				}
+				if (!opinion.getExternalRefs().isEmpty()) {
+                    opinionElem.addContent(externalReferencesToDOM(opinion.getExternalRefs()));
+                }
 				Opinion.OpinionHolder holder = opinion.getOpinionHolder();
 				if (holder != null) {
 					Element opinionHolderElem = new Element("opinion_holder");
@@ -1723,6 +1743,9 @@ class ReadWriteManager {
 							spanElem.addContent(targetElem);
 						}
 					}
+ 	                if (!holder.getExternalRefs().isEmpty()) {
+	                    opinionHolderElem.addContent(externalReferencesToDOM(holder.getExternalRefs()));
+	                }
 					opinionElem.addContent(opinionHolderElem);
 				}
 				Opinion.OpinionTarget opTarget = opinion.getOpinionTarget();
@@ -1747,6 +1770,9 @@ class ReadWriteManager {
 							spanElem.addContent(targetElem);
 						}
 					}
+                    if (!opTarget.getExternalRefs().isEmpty()) {
+                        opinionTargetElem.addContent(externalReferencesToDOM(opTarget.getExternalRefs()));
+                    }
 					opinionElem.addContent(opinionTargetElem);
 				}
 				Opinion.OpinionExpression expression = opinion.getOpinionExpression();
@@ -1783,6 +1809,9 @@ class ReadWriteManager {
 							spanElem.addContent(targetElem);
 						}
 					}
+                    if (!expression.getExternalRefs().isEmpty()) {
+                        opinionExpressionElem.addContent(externalReferencesToDOM(expression.getExternalRefs()));
+                    }
 					opinionElem.addContent(opinionExpressionElem);
 				}
 

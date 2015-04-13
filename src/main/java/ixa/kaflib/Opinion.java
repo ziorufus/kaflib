@@ -13,9 +13,11 @@ public class Opinion implements Serializable {
 	public static class OpinionHolder implements Serializable {
 		private String type;
 		private Span<Term> span;
+	    private List<ExternalRef> externalReferences;
 
 		OpinionHolder(Span<Term> span) {
 			this.span = span;
+			this.externalReferences = new ArrayList<ExternalRef>();
 		}
 
 		OpinionHolder(OpinionHolder oh, HashMap<String, Term> terms) {
@@ -37,6 +39,10 @@ public class Opinion implements Serializable {
 			else {
 				this.span = new Span<Term>(copiedTargets);
 			}
+			this.externalReferences = new ArrayList<ExternalRef>();
+	        for (ExternalRef externalRef : oh.getExternalRefs()) {
+	            this.externalReferences.add(new ExternalRef(externalRef));
+	        }
 		}
 
 		public boolean hasType() {
@@ -70,14 +76,38 @@ public class Opinion implements Serializable {
 		public void setSpan(Span<Term> span) {
 			this.span = span;
 		}
+		
+		public ExternalRef getExternalRef(String resource) {
+		    for (ExternalRef ref : this.externalReferences) {
+		        if (ref.getResource().equalsIgnoreCase(resource)) {
+		            return ref;
+		        }
+		    }
+		    return null;
+        }
+		 
+        public List<ExternalRef> getExternalRefs() {
+            return this.externalReferences;
+        }
+             
+        public void addExternalRef(ExternalRef externalRef) {
+            this.externalReferences.add(externalRef);
+        }
+    
+        public void addExternalRefs(List<ExternalRef> externalRefs) {
+            this.externalReferences.addAll(externalRefs);
+        }
+        
 	}
 
 	public static class OpinionTarget implements Serializable {
 		private Span<Term> span;
 		private String type;
+		private List<ExternalRef> externalReferences;
 
 		OpinionTarget(Span<Term> span) {
 			this.span = span;
+			this.externalReferences = new ArrayList<ExternalRef>();
 		}
 
 		OpinionTarget(OpinionTarget ot, HashMap<String, Term> terms) {
@@ -99,6 +129,10 @@ public class Opinion implements Serializable {
 			else {
 				this.span = new Span<Term>(copiedTargets);
 			}
+			this.externalReferences = new ArrayList<ExternalRef>();
+	        for (ExternalRef externalRef : ot.getExternalRefs()) {
+	            this.externalReferences.add(new ExternalRef(externalRef));
+	        }
 		}
 
 		public boolean hasType() {
@@ -132,6 +166,28 @@ public class Opinion implements Serializable {
 		public void setSpan(Span<Term> span) {
 			this.span = span;
 		}
+      
+		public ExternalRef getExternalRef(String resource) {
+            for (ExternalRef ref : this.externalReferences) {
+                if (ref.getResource().equalsIgnoreCase(resource)) {
+                    return ref;
+                }
+            }
+            return null;
+        }
+         
+        public List<ExternalRef> getExternalRefs() {
+            return this.externalReferences;
+        }
+             
+        public void addExternalRef(ExternalRef externalRef) {
+            this.externalReferences.add(externalRef);
+        }
+    
+        public void addExternalRefs(List<ExternalRef> externalRefs) {
+            this.externalReferences.addAll(externalRefs);
+        }
+	        
 	}
 
 	public static class OpinionExpression implements Serializable {
@@ -152,9 +208,12 @@ public class Opinion implements Serializable {
 		private String sentimentProductFeature;
 
 		private Span<Term> span;
+		
+		private List<ExternalRef> externalReferences;
 
 		OpinionExpression(Span<Term> span) {
 			this.span = span;
+			this.externalReferences = new ArrayList<ExternalRef>();
 		}
 
 		OpinionExpression(OpinionExpression oe, HashMap<String, Term> terms) {
@@ -181,6 +240,10 @@ public class Opinion implements Serializable {
 			else {
 				this.span = new Span<Term>(copiedTargets);
 			}
+			this.externalReferences = new ArrayList<ExternalRef>();
+	        for (ExternalRef externalRef : oe.getExternalRefs()) {
+	            this.externalReferences.add(new ExternalRef(externalRef));
+	        }
 		}
 
 		public boolean hasPolarity() {
@@ -262,6 +325,28 @@ public class Opinion implements Serializable {
 		public void setSpan(Span<Term> span) {
 			this.span = span;
 		}
+		
+		public ExternalRef getExternalRef(String resource) {
+            for (ExternalRef ref : this.externalReferences) {
+                if (ref.getResource().equalsIgnoreCase(resource)) {
+                    return ref;
+                }
+            }
+            return null;
+        }
+         
+        public List<ExternalRef> getExternalRefs() {
+            return this.externalReferences;
+        }
+             
+        public void addExternalRef(ExternalRef externalRef) {
+            this.externalReferences.add(externalRef);
+        }
+    
+        public void addExternalRefs(List<ExternalRef> externalRefs) {
+            this.externalReferences.addAll(externalRefs);
+        }
+        
 	}
 
 	private String id;
@@ -269,6 +354,7 @@ public class Opinion implements Serializable {
 	private OpinionTarget opinionTarget;
 	private OpinionExpression opinionExpression;
 	private String label;
+	private List<ExternalRef> externalReferences;
 
 	public String getLabel() {
 		return label;
@@ -280,6 +366,7 @@ public class Opinion implements Serializable {
 
 	Opinion(String id) {
 		this.id = id;
+		this.externalReferences = new ArrayList<ExternalRef>();
 	}
 
 	Opinion(Opinion opinion, HashMap<String, Term> terms) {
@@ -293,6 +380,10 @@ public class Opinion implements Serializable {
 		if (opinion.opinionExpression != null) {
 			this.opinionExpression = new OpinionExpression(opinion.opinionExpression, terms);
 		}
+		this.externalReferences = new ArrayList<ExternalRef>();
+	    for (ExternalRef externalRef : opinion.getExternalRefs()) {
+	        this.externalReferences.add(new ExternalRef(externalRef));
+	    }
 	}
 
 	public String getId() {
@@ -345,4 +436,25 @@ public class Opinion implements Serializable {
 		return getSpanStr(this.getOpinionExpression().getSpan());
 	}
 
+	public ExternalRef getExternalRef(String resource) {
+        for (ExternalRef ref : this.externalReferences) {
+            if (ref.getResource().equalsIgnoreCase(resource)) {
+                return ref;
+            }
+        }
+        return null;
+    }
+     
+    public List<ExternalRef> getExternalRefs() {
+        return this.externalReferences;
+    }
+         
+    public void addExternalRef(ExternalRef externalRef) {
+        this.externalReferences.add(externalRef);
+    }
+
+    public void addExternalRefs(List<ExternalRef> externalRefs) {
+        this.externalReferences.addAll(externalRefs);
+    }
+    
 }
