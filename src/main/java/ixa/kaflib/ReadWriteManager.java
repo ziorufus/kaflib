@@ -112,7 +112,7 @@ class ReadWriteManager {
 
 		List<Element> rootChildrenElems = rootElem.getChildren();
 		for (Element elem : rootChildrenElems) {
-			if (elem.getName().equals("nafHeader")) {
+			if (elem.getName().equals("nafHeader") || elem.getName().equals("kafHeader")) {
 				List<Element> lpsElems = elem.getChildren("linguisticProcessors");
 				for (Element lpsElem : lpsElems) {
 					String layer = getAttribute("layer", lpsElem);
@@ -185,7 +185,12 @@ class ReadWriteManager {
 			else if (elem.getName().equals("text")) {
 				List<Element> wfElems = elem.getChildren();
 				for (Element wfElem : wfElems) {
-					String wid = getAttribute("id", wfElem);
+					String wid;
+					try {
+						wid = getAttribute("id", wfElem);
+					} catch (Exception e) {
+						wid = getAttribute("wid", wfElem);
+					}
 					String wForm = wfElem.getText();
 					String wSent = getAttribute("sent", wfElem);
 					WF newWf = kaf.newWF(wid, wForm, Integer.valueOf(wSent));
@@ -599,11 +604,18 @@ class ReadWriteManager {
 			else if (elem.getName().equals("opinions")) {
 				List<Element> opinionElems = elem.getChildren("opinion");
 				for (Element opinionElem : opinionElems) {
-					String opinionId = getAttribute("id", opinionElem);
+					String opinionId;
+					try {
+						opinionId = getAttribute("id", opinionElem);
+					} catch (Exception e) {
+						opinionId = getAttribute("oid", opinionElem);
+					}
 					Opinion opinion = kaf.newOpinion(opinionId);
-					String label = getAttribute("label", opinionElem);
-					if (label != null) {
+					try {
+						String label = getAttribute("label", opinionElem);
 						opinion.setLabel(label);
+					} catch (Exception e) {
+						// ignored
 					}
 					Element opinionHolderElem = opinionElem.getChild("opinion_holder");
 					if (opinionHolderElem != null) {
@@ -934,7 +946,12 @@ class ReadWriteManager {
 	}
 
 	private static void DOMToTerm(Element termElem, KAFDocument kaf, boolean isComponent, Map<String, WF> wfIndex, Map<String, Term> termIndex) throws KAFNotValidException {
-		String tid = getAttribute("id", termElem);
+		String tid;
+		try {
+			tid = getAttribute("id", termElem);
+		} catch (Exception e) {
+			tid = getAttribute("tid", termElem);
+		}
 		Element spanElem = termElem.getChild("span");
 		if (spanElem == null) {
 			throw new IllegalStateException("Every term must contain a span element");
