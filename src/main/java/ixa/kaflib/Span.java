@@ -87,7 +87,7 @@ public class Span<T> implements Serializable {
 	}
 
 	public void setHead(T head) {
-		this.heads.add(head)
+		this.heads.add(head);
 	}
 
 	public void addTarget(T target) {
