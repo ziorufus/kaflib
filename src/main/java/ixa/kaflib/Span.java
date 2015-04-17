@@ -90,6 +90,14 @@ public class Span<T> implements Serializable {
 		this.heads.add(head);
 	}
 
+	public void deleteHead(T head) {
+		this.heads.remove(head);
+	}
+
+	public void clearHeads() {
+		this.heads = new HashSet<>();
+	}
+
 	public void addTarget(T target) {
 		this.targets.add(target);
 	}
