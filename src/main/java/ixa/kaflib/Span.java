@@ -3,6 +3,7 @@ package ixa.kaflib;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -125,4 +126,23 @@ public class Span<T> implements Serializable {
 	public int size() {
 		return this.targets.size();
 	}
+	
+
+	@Override
+	public boolean equals(Object object) {
+	    if (object == this) {
+	        return true;
+	    }
+	    if (!(object instanceof Span<?>)) {
+	        return false;
+	    }
+	    Span<?> other = (Span<?>) object;
+	    return other.targets.equals(targets) && other.heads.equals(heads);
+	}
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(targets, heads);
+    }
+
 }

@@ -1,6 +1,7 @@
 package ixa.kaflib;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 
 public class ExternalRef implements Serializable {
@@ -72,4 +73,30 @@ public class ExternalRef implements Serializable {
     public void setExternalRef(ExternalRef externalRef) {
 	this.externalRef = externalRef;
     }
+    
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof ExternalRef)) {
+            return false;
+        }
+        ExternalRef other = (ExternalRef) object;
+        return Objects.equals(resource, other.resource)
+                && Objects.equals(reference, other.reference) && confidence == other.confidence
+                && Objects.equals(source, other.source)
+                && Objects.equals(externalRef, other.externalRef);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(resource, reference, confidence, source, externalRef);
+    }
+
+    @Override
+    public String toString() {
+        return resource + "=" + reference + " (conf: " + confidence + ", source: " + source + ")";
+    }
+    
 }

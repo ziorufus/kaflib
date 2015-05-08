@@ -1095,7 +1095,7 @@ class AnnotationContainer implements Serializable {
             throw new UnsupportedOperationException();
 
         } else if (annotation instanceof Opinion) {
-            throw new UnsupportedOperationException();
+            opinions.remove(annotation);
 
         } else if (annotation instanceof Relation) {
             throw new UnsupportedOperationException();

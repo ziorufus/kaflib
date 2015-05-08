@@ -1,24 +1,23 @@
 package ixa.kaflib;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import java.io.File;
-import java.io.Reader;
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.regex.Pattern;
-import java.io.IOException;
 
-import org.jdom2.JDOMException;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 
 
 /**
@@ -1084,6 +1083,16 @@ public class KAFDocument implements Serializable {
     public List<Opinion> getOpinions() {
         return annotationContainer.getOpinions();
     }
+    
+    public List<Opinion> getOpinions(String label) {
+        final List<Opinion> opinions = new ArrayList<Opinion>();
+        for (final Opinion opinion : annotationContainer.getOpinions()) {
+            if (Objects.equals(opinion.getLabel(), label)) {
+                opinions.add(opinion);
+            }
+        }
+        return opinions;
+    }
 
     /**
      * Returns a list with all relations in the document
@@ -1787,6 +1796,12 @@ public class KAFDocument implements Serializable {
         this.annotationContainer.removeLayer(layer);
     }
 
+    public void removeAnnotations(Iterable<?> annotations) {
+        for (Object annotation : annotations) {
+            this.annotationContainer.removeAnnotation(annotation);            
+        }
+    }
+    
     public void removeAnnotation(Object annotation) {
         this.annotationContainer.removeAnnotation(annotation);
     }

@@ -3,6 +3,7 @@ package ixa.kaflib;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.io.Serializable;
 
 /**
@@ -98,6 +99,29 @@ public class Opinion implements Serializable {
             this.externalReferences.addAll(externalRefs);
         }
         
+        @Override
+        public boolean equals(Object object) {
+            if (object == this) {
+                return true;
+            }
+            if (!(object instanceof OpinionTarget)) {
+                return false;
+            }
+            OpinionHolder other = (OpinionHolder) object;
+            return Objects.equals(span, other.span) && Objects.equals(type, other.type)
+                    && Objects.equals(externalReferences, other.externalReferences);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(span, type, externalReferences);
+        }
+        
+        @Override
+        public String toString() {
+            return "Holder: " + span;
+        }
+        
 	}
 
 	public static class OpinionTarget implements Serializable {
@@ -187,7 +211,30 @@ public class Opinion implements Serializable {
         public void addExternalRefs(List<ExternalRef> externalRefs) {
             this.externalReferences.addAll(externalRefs);
         }
-	        
+	       
+        @Override
+        public boolean equals(Object object) {
+            if (object == this) {
+                return true;
+            }
+            if (!(object instanceof OpinionTarget)) {
+                return false;
+            }
+            OpinionTarget other = (OpinionTarget) object;
+            return Objects.equals(span, other.span) && Objects.equals(type, other.type)
+                    && Objects.equals(externalReferences, other.externalReferences);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(span, type, externalReferences);
+        }
+        
+        @Override
+        public String toString() {
+            return "Target: " + span;
+        }
+        
 	}
 
 	public static class OpinionExpression implements Serializable {
@@ -347,6 +394,35 @@ public class Opinion implements Serializable {
             this.externalReferences.addAll(externalRefs);
         }
         
+        @Override
+        public boolean equals(Object object) {
+            if (object == this) {
+                return true;
+            }
+            if (!(object instanceof OpinionExpression)) {
+                return false;
+            }
+            OpinionExpression other = (OpinionExpression) object;
+            return Objects.equals(polarity, other.polarity)
+                    && Objects.equals(strength, other.strength)
+                    && Objects.equals(subjectivity, other.subjectivity)
+                    && Objects.equals(sentimentSemanticType, other.sentimentSemanticType)
+                    && Objects.equals(sentimentProductFeature, other.sentimentProductFeature)
+                    && Objects.equals(span, other.span)
+                    && Objects.equals(externalReferences, other.externalReferences);
+        }
+ 
+        @Override
+        public int hashCode() {
+            return Objects.hash(polarity, strength, subjectivity, sentimentSemanticType,
+                    sentimentProductFeature, span, externalReferences);
+        }
+
+        @Override
+        public String toString() {
+            return "Expression " + polarity + ": " + span;
+        }
+        
 	}
 
 	private String id;
@@ -420,6 +496,24 @@ public class Opinion implements Serializable {
 		this.opinionExpression = new Opinion.OpinionExpression(span);
 		return this.opinionExpression;
 	}
+	
+	public OpinionHolder removeOpinionHolder() {
+	    OpinionHolder result = this.opinionHolder;
+	    this.opinionHolder = null;
+	    return result;
+	}
+
+    public OpinionTarget removeOpinionTarget() {
+        OpinionTarget result = this.opinionTarget;
+        this.opinionTarget = null;
+        return result;
+    }
+
+    public OpinionExpression removeOpinionExpression() {
+        OpinionExpression result = this.opinionExpression;
+        this.opinionExpression = null;
+        return result;
+    }
 
 	public String getSpanStr(Span<Term> span) {
 		String str = "";
