@@ -1,554 +1,627 @@
 package ixa.kaflib;
 
-import java.util.List;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
-import java.io.Serializable;
 
 /**
  * Class for representing opinions.
  */
 public class Opinion implements Serializable {
 
-	public static class OpinionHolder implements Serializable {
-		private String type;
-		private Span<Term> span;
-	    private List<ExternalRef> externalReferences;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -6971847529645535297L;
 
-		OpinionHolder(Span<Term> span) {
-			this.span = span;
-			this.externalReferences = new ArrayList<ExternalRef>();
-		}
+    public static class OpinionHolder implements Serializable {
 
-		OpinionHolder(OpinionHolder oh, HashMap<String, Term> terms) {
-		/* Copy span */
-			Span<Term> span = oh.span;
-			List<Term> targets = span.getTargets();
-			List<Term> copiedTargets = new ArrayList<Term>();
-			for (Term term : targets) {
-				Term copiedTerm = terms.get(term.getId());
-				if (copiedTerm == null) {
-					throw new IllegalStateException("Term not found when copying opinion_holder");
-				}
-				copiedTargets.add(copiedTerm);
-			}
-			if (span.hasHead()) {
-				Term copiedHead = terms.get(span.getHead().getId());
-				this.span = new Span<Term>(copiedTargets, copiedHead);
-			}
-			else {
-				this.span = new Span<Term>(copiedTargets);
-			}
-			this.externalReferences = new ArrayList<ExternalRef>();
-	        for (ExternalRef externalRef : oh.getExternalRefs()) {
-	            this.externalReferences.add(new ExternalRef(externalRef));
-	        }
-		}
+        /**
+         *
+         */
+        private static final long serialVersionUID = -956906026133317235L;
+        private String type;
+        private Span<Term> span;
+        private final List<ExternalRef> externalReferences;
 
-		public boolean hasType() {
-			return type != null;
-		}
-
-		public String getType() {
-			return type;
-		}
-
-		public void setType(String type) {
-			this.type = type;
-		}
-
-		public List<Term> getTerms() {
-			return this.span.getTargets();
-		}
-
-		public void addTerm(Term term) {
-			this.span.addTarget(term);
-		}
-
-		public void addTerm(Term term, boolean isHead) {
-			this.span.addTarget(term, isHead);
-		}
-
-		public Span<Term> getSpan() {
-			return this.span;
-		}
-
-		public void setSpan(Span<Term> span) {
-			this.span = span;
-		}
-		
-		public ExternalRef getExternalRef(String resource) {
-		    for (ExternalRef ref : this.externalReferences) {
-		        if (ref.getResource().equalsIgnoreCase(resource)) {
-		            return ref;
-		        }
-		    }
-		    return null;
+        OpinionHolder(final Span<Term> span) {
+            this.span = span;
+            this.externalReferences = new ArrayList<ExternalRef>();
         }
-		 
-        public List<ExternalRef> getExternalRefs() {
-            return this.externalReferences;
-        }
-             
-        public void addExternalRef(ExternalRef externalRef) {
-            this.externalReferences.add(externalRef);
-        }
-    
-        public void addExternalRefs(List<ExternalRef> externalRefs) {
-            this.externalReferences.addAll(externalRefs);
-        }
-        
-        @Override
-        public boolean equals(Object object) {
-            if (object == this) {
-                return true;
+
+        OpinionHolder(final OpinionHolder oh, final HashMap<String, Term> terms) {
+            /* Copy span */
+            final Span<Term> span = oh.span;
+            final List<Term> targets = span.getTargets();
+            final List<Term> copiedTargets = new ArrayList<Term>();
+            for (final Term term : targets) {
+                final Term copiedTerm = terms.get(term.getId());
+                if (copiedTerm == null) {
+                    throw new IllegalStateException("Term not found when copying opinion_holder");
+                }
+                copiedTargets.add(copiedTerm);
             }
-            if (!(object instanceof OpinionTarget)) {
-                return false;
+            if (span.hasHead()) {
+                final Term copiedHead = terms.get(span.getHead().getId());
+                this.span = new Span<Term>(copiedTargets, copiedHead);
+            } else {
+                this.span = new Span<Term>(copiedTargets);
             }
-            OpinionHolder other = (OpinionHolder) object;
-            return Objects.equals(span, other.span) && Objects.equals(type, other.type)
-                    && Objects.equals(externalReferences, other.externalReferences);
+            this.externalReferences = new ArrayList<ExternalRef>();
+            for (final ExternalRef externalRef : oh.getExternalRefs()) {
+                this.externalReferences.add(new ExternalRef(externalRef));
+            }
         }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(span, type, externalReferences);
+        public boolean hasType() {
+            return this.type != null;
         }
-        
-        @Override
-        public String toString() {
-            return "Holder: " + span;
+
+        public String getType() {
+            return this.type;
         }
-        
-	}
 
-	public static class OpinionTarget implements Serializable {
-		private Span<Term> span;
-		private String type;
-		private List<ExternalRef> externalReferences;
+        public void setType(final String type) {
+            this.type = type;
+        }
 
-		OpinionTarget(Span<Term> span) {
-			this.span = span;
-			this.externalReferences = new ArrayList<ExternalRef>();
-		}
+        public List<Term> getTerms() {
+            return this.span.getTargets();
+        }
 
-		OpinionTarget(OpinionTarget ot, HashMap<String, Term> terms) {
-	    /* Copy span */
-			Span<Term> span = ot.span;
-			List<Term> targets = span.getTargets();
-			List<Term> copiedTargets = new ArrayList<Term>();
-			for (Term term : targets) {
-				Term copiedTerm = terms.get(term.getId());
-				if (copiedTerm == null) {
-					throw new IllegalStateException("Term not found when copying opinion_target");
-				}
-				copiedTargets.add(copiedTerm);
-			}
-			if (span.hasHead()) {
-				Term copiedHead = terms.get(span.getHead().getId());
-				this.span = new Span<Term>(copiedTargets, copiedHead);
-			}
-			else {
-				this.span = new Span<Term>(copiedTargets);
-			}
-			this.externalReferences = new ArrayList<ExternalRef>();
-	        for (ExternalRef externalRef : ot.getExternalRefs()) {
-	            this.externalReferences.add(new ExternalRef(externalRef));
-	        }
-		}
+        public void addTerm(final Term term) {
+            this.span.addTarget(term);
+        }
 
-		public boolean hasType() {
-			return type != null;
-		}
+        public void addTerm(final Term term, final boolean isHead) {
+            this.span.addTarget(term, isHead);
+        }
 
-		public String getType() {
-			return type;
-		}
+        public Span<Term> getSpan() {
+            return this.span;
+        }
 
-		public void setType(String type) {
-			this.type = type;
-		}
+        public void setSpan(final Span<Term> span) {
+            this.span = span;
+        }
 
-		public List<Term> getTerms() {
-			return this.span.getTargets();
-		}
-
-		public void addTerm(Term term) {
-			this.span.addTarget(term);
-		}
-
-		public void addTerm(Term term, boolean isHead) {
-			this.span.addTarget(term, isHead);
-		}
-
-		public Span<Term> getSpan() {
-			return this.span;
-		}
-
-		public void setSpan(Span<Term> span) {
-			this.span = span;
-		}
-      
-		public ExternalRef getExternalRef(String resource) {
-            for (ExternalRef ref : this.externalReferences) {
+        public ExternalRef getExternalRef(final String resource) {
+            for (final ExternalRef ref : this.externalReferences) {
                 if (ref.getResource().equalsIgnoreCase(resource)) {
                     return ref;
                 }
             }
             return null;
         }
-         
+
         public List<ExternalRef> getExternalRefs() {
             return this.externalReferences;
         }
-             
-        public void addExternalRef(ExternalRef externalRef) {
+
+        public void addExternalRef(final ExternalRef externalRef) {
             this.externalReferences.add(externalRef);
         }
-    
-        public void addExternalRefs(List<ExternalRef> externalRefs) {
+
+        public void addExternalRefs(final List<ExternalRef> externalRefs) {
             this.externalReferences.addAll(externalRefs);
         }
-	       
+
         @Override
-        public boolean equals(Object object) {
+        public boolean equals(final Object object) {
             if (object == this) {
                 return true;
             }
             if (!(object instanceof OpinionTarget)) {
                 return false;
             }
-            OpinionTarget other = (OpinionTarget) object;
-            return Objects.equals(span, other.span) && Objects.equals(type, other.type)
-                    && Objects.equals(externalReferences, other.externalReferences);
+            final OpinionHolder other = (OpinionHolder) object;
+            return Objects.equals(this.span, other.span) && Objects.equals(this.type, other.type)
+                    && Objects.equals(this.externalReferences, other.externalReferences);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(span, type, externalReferences);
+            return Objects.hash(this.span, this.type, this.externalReferences);
         }
-        
+
         @Override
         public String toString() {
-            return "Target: " + span;
+            return "Holder: " + this.span;
         }
-        
-	}
 
-	public static class OpinionExpression implements Serializable {
+    }
 
-		/* Polarity (optional) */
-		private String polarity;
+    public static class OpinionTarget implements Serializable {
 
-		/* Strength (optional) */
-		private String strength;
+        /**
+         *
+         */
+        private static final long serialVersionUID = -9128844215615857214L;
+        private Span<Term> span;
+        private String type;
+        private final List<ExternalRef> externalReferences;
 
-		/* Subjectivity (optional) */
-		private String subjectivity;
+        OpinionTarget(final Span<Term> span) {
+            this.span = span;
+            this.externalReferences = new ArrayList<ExternalRef>();
+        }
 
-		/* Sentiment semantic type (optional) */
-		private String sentimentSemanticType;
+        OpinionTarget(final OpinionTarget ot, final HashMap<String, Term> terms) {
+            /* Copy span */
+            final Span<Term> span = ot.span;
+            final List<Term> targets = span.getTargets();
+            final List<Term> copiedTargets = new ArrayList<Term>();
+            for (final Term term : targets) {
+                final Term copiedTerm = terms.get(term.getId());
+                if (copiedTerm == null) {
+                    throw new IllegalStateException("Term not found when copying opinion_target");
+                }
+                copiedTargets.add(copiedTerm);
+            }
+            if (span.hasHead()) {
+                final Term copiedHead = terms.get(span.getHead().getId());
+                this.span = new Span<Term>(copiedTargets, copiedHead);
+            } else {
+                this.span = new Span<Term>(copiedTargets);
+            }
+            this.externalReferences = new ArrayList<ExternalRef>();
+            for (final ExternalRef externalRef : ot.getExternalRefs()) {
+                this.externalReferences.add(new ExternalRef(externalRef));
+            }
+        }
 
-		/* Sentiment product feature (optional) */
-		private String sentimentProductFeature;
+        public boolean hasType() {
+            return this.type != null;
+        }
 
-		private Span<Term> span;
-		
-		private List<ExternalRef> externalReferences;
+        public String getType() {
+            return this.type;
+        }
 
-		OpinionExpression(Span<Term> span) {
-			this.span = span;
-			this.externalReferences = new ArrayList<ExternalRef>();
-		}
+        public void setType(final String type) {
+            this.type = type;
+        }
 
-		OpinionExpression(OpinionExpression oe, HashMap<String, Term> terms) {
-			this.polarity = oe.polarity;
-			this.strength = oe.strength;
-			this.subjectivity = oe.subjectivity;
-			this.sentimentSemanticType = oe.sentimentSemanticType;
-			this.sentimentProductFeature = oe.sentimentProductFeature;
-	    /* Copy span */
-			Span<Term> span = oe.span;
-			List<Term> targets = span.getTargets();
-			List<Term> copiedTargets = new ArrayList<Term>();
-			for (Term term : targets) {
-				Term copiedTerm = terms.get(term.getId());
-				if (copiedTerm == null) {
-					throw new IllegalStateException("Term not found when copying opinion_expression");
-				}
-				copiedTargets.add(copiedTerm);
-			}
-			if (span.hasHead()) {
-				Term copiedHead = terms.get(span.getHead().getId());
-				this.span = new Span<Term>(copiedTargets, copiedHead);
-			}
-			else {
-				this.span = new Span<Term>(copiedTargets);
-			}
-			this.externalReferences = new ArrayList<ExternalRef>();
-	        for (ExternalRef externalRef : oe.getExternalRefs()) {
-	            this.externalReferences.add(new ExternalRef(externalRef));
-	        }
-		}
+        public List<Term> getTerms() {
+            return this.span.getTargets();
+        }
 
-		public boolean hasPolarity() {
-			return (this.polarity != null);
-		}
+        public void addTerm(final Term term) {
+            this.span.addTarget(term);
+        }
 
-		public String getPolarity() {
-			return polarity;
-		}
+        public void addTerm(final Term term, final boolean isHead) {
+            this.span.addTarget(term, isHead);
+        }
 
-		public void setPolarity(String polarity) {
-			this.polarity = polarity;
-		}
+        public Span<Term> getSpan() {
+            return this.span;
+        }
 
-		public boolean hasStrength() {
-			return (this.strength != null);
-		}
+        public void setSpan(final Span<Term> span) {
+            this.span = span;
+        }
 
-		public String getStrength() {
-			return strength;
-		}
-
-		public void setStrength(String strength) {
-			this.strength = strength;
-		}
-
-		public boolean hasSubjectivity() {
-			return (this.subjectivity != null);
-		}
-
-		public String getSubjectivity() {
-			return subjectivity;
-		}
-
-		public void setSubjectivity(String subjectivity) {
-			this.subjectivity = subjectivity;
-		}
-
-		public boolean hasSentimentSemanticType() {
-			return (this.sentimentSemanticType != null);
-		}
-
-		public String getSentimentSemanticType() {
-			return sentimentSemanticType;
-		}
-
-		public void setSentimentSemanticType(String sentimentSemanticType) {
-			this.sentimentSemanticType = sentimentSemanticType;
-		}
-
-		public boolean hasSentimentProductFeature() {
-			return (this.sentimentProductFeature != null);
-		}
-
-		public String getSentimentProductFeature() {
-			return sentimentProductFeature;
-		}
-
-		public void setSentimentProductFeature(String sentimentProductFeature) {
-			this.sentimentProductFeature = sentimentProductFeature;
-		}
-
-		public List<Term> getTerms() {
-			return this.span.getTargets();
-		}
-
-		public void addTerm(Term term) {
-			this.span.addTarget(term);
-		}
-
-		public void addTerm(Term term, boolean isHead) {
-			this.span.addTarget(term, isHead);
-		}
-
-		public Span<Term> getSpan() {
-			return this.span;
-		}
-
-		public void setSpan(Span<Term> span) {
-			this.span = span;
-		}
-		
-		public ExternalRef getExternalRef(String resource) {
-            for (ExternalRef ref : this.externalReferences) {
+        public ExternalRef getExternalRef(final String resource) {
+            for (final ExternalRef ref : this.externalReferences) {
                 if (ref.getResource().equalsIgnoreCase(resource)) {
                     return ref;
                 }
             }
             return null;
         }
-         
+
         public List<ExternalRef> getExternalRefs() {
             return this.externalReferences;
         }
-             
-        public void addExternalRef(ExternalRef externalRef) {
+
+        public void addExternalRef(final ExternalRef externalRef) {
             this.externalReferences.add(externalRef);
         }
-    
-        public void addExternalRefs(List<ExternalRef> externalRefs) {
+
+        public void addExternalRefs(final List<ExternalRef> externalRefs) {
             this.externalReferences.addAll(externalRefs);
         }
-        
+
         @Override
-        public boolean equals(Object object) {
+        public boolean equals(final Object object) {
+            if (object == this) {
+                return true;
+            }
+            if (!(object instanceof OpinionTarget)) {
+                return false;
+            }
+            final OpinionTarget other = (OpinionTarget) object;
+            return Objects.equals(this.span, other.span) && Objects.equals(this.type, other.type)
+                    && Objects.equals(this.externalReferences, other.externalReferences);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.span, this.type, this.externalReferences);
+        }
+
+        @Override
+        public String toString() {
+            return "Target: " + this.span;
+        }
+
+    }
+
+    public static class OpinionExpression implements Serializable {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 3404051215983026456L;
+
+        /* Polarity (optional) */
+        private String polarity;
+
+        /* Strength (optional) */
+        private String strength;
+
+        /* Subjectivity (optional) */
+        private String subjectivity;
+
+        /* Sentiment semantic type (optional) */
+        private String sentimentSemanticType;
+
+        /* Sentiment product feature (optional) */
+        private String sentimentProductFeature;
+
+        private Span<Term> span;
+
+        private final List<ExternalRef> externalReferences;
+
+        OpinionExpression(final Span<Term> span) {
+            this.span = span;
+            this.externalReferences = new ArrayList<ExternalRef>();
+        }
+
+        OpinionExpression(final OpinionExpression oe, final HashMap<String, Term> terms) {
+            this.polarity = oe.polarity;
+            this.strength = oe.strength;
+            this.subjectivity = oe.subjectivity;
+            this.sentimentSemanticType = oe.sentimentSemanticType;
+            this.sentimentProductFeature = oe.sentimentProductFeature;
+            /* Copy span */
+            final Span<Term> span = oe.span;
+            final List<Term> targets = span.getTargets();
+            final List<Term> copiedTargets = new ArrayList<Term>();
+            for (final Term term : targets) {
+                final Term copiedTerm = terms.get(term.getId());
+                if (copiedTerm == null) {
+                    throw new IllegalStateException(
+                            "Term not found when copying opinion_expression");
+                }
+                copiedTargets.add(copiedTerm);
+            }
+            if (span.hasHead()) {
+                final Term copiedHead = terms.get(span.getHead().getId());
+                this.span = new Span<Term>(copiedTargets, copiedHead);
+            } else {
+                this.span = new Span<Term>(copiedTargets);
+            }
+            this.externalReferences = new ArrayList<ExternalRef>();
+            for (final ExternalRef externalRef : oe.getExternalRefs()) {
+                this.externalReferences.add(new ExternalRef(externalRef));
+            }
+        }
+
+        public boolean hasPolarity() {
+            return this.polarity != null;
+        }
+
+        public String getPolarity() {
+            return this.polarity;
+        }
+
+        public void setPolarity(final String polarity) {
+            this.polarity = polarity;
+        }
+
+        public boolean hasStrength() {
+            return this.strength != null;
+        }
+
+        public String getStrength() {
+            return this.strength;
+        }
+
+        public void setStrength(final String strength) {
+            this.strength = strength;
+        }
+
+        public boolean hasSubjectivity() {
+            return this.subjectivity != null;
+        }
+
+        public String getSubjectivity() {
+            return this.subjectivity;
+        }
+
+        public void setSubjectivity(final String subjectivity) {
+            this.subjectivity = subjectivity;
+        }
+
+        public boolean hasSentimentSemanticType() {
+            return this.sentimentSemanticType != null;
+        }
+
+        public String getSentimentSemanticType() {
+            return this.sentimentSemanticType;
+        }
+
+        public void setSentimentSemanticType(final String sentimentSemanticType) {
+            this.sentimentSemanticType = sentimentSemanticType;
+        }
+
+        public boolean hasSentimentProductFeature() {
+            return this.sentimentProductFeature != null;
+        }
+
+        public String getSentimentProductFeature() {
+            return this.sentimentProductFeature;
+        }
+
+        public void setSentimentProductFeature(final String sentimentProductFeature) {
+            this.sentimentProductFeature = sentimentProductFeature;
+        }
+
+        public List<Term> getTerms() {
+            return this.span.getTargets();
+        }
+
+        public void addTerm(final Term term) {
+            this.span.addTarget(term);
+        }
+
+        public void addTerm(final Term term, final boolean isHead) {
+            this.span.addTarget(term, isHead);
+        }
+
+        public Span<Term> getSpan() {
+            return this.span;
+        }
+
+        public void setSpan(final Span<Term> span) {
+            this.span = span;
+        }
+
+        public ExternalRef getExternalRef(final String resource) {
+            for (final ExternalRef ref : this.externalReferences) {
+                if (ref.getResource().equalsIgnoreCase(resource)) {
+                    return ref;
+                }
+            }
+            return null;
+        }
+
+        public List<ExternalRef> getExternalRefs() {
+            return this.externalReferences;
+        }
+
+        public void addExternalRef(final ExternalRef externalRef) {
+            this.externalReferences.add(externalRef);
+        }
+
+        public void addExternalRefs(final List<ExternalRef> externalRefs) {
+            this.externalReferences.addAll(externalRefs);
+        }
+
+        @Override
+        public boolean equals(final Object object) {
             if (object == this) {
                 return true;
             }
             if (!(object instanceof OpinionExpression)) {
                 return false;
             }
-            OpinionExpression other = (OpinionExpression) object;
-            return Objects.equals(polarity, other.polarity)
-                    && Objects.equals(strength, other.strength)
-                    && Objects.equals(subjectivity, other.subjectivity)
-                    && Objects.equals(sentimentSemanticType, other.sentimentSemanticType)
-                    && Objects.equals(sentimentProductFeature, other.sentimentProductFeature)
-                    && Objects.equals(span, other.span)
-                    && Objects.equals(externalReferences, other.externalReferences);
+            final OpinionExpression other = (OpinionExpression) object;
+            return Objects.equals(this.polarity, other.polarity)
+                    && Objects.equals(this.strength, other.strength)
+                    && Objects.equals(this.subjectivity, other.subjectivity)
+                    && Objects.equals(this.sentimentSemanticType, other.sentimentSemanticType)
+                    && Objects.equals(this.sentimentProductFeature, other.sentimentProductFeature)
+                    && Objects.equals(this.span, other.span)
+                    && Objects.equals(this.externalReferences, other.externalReferences);
         }
- 
+
         @Override
         public int hashCode() {
-            return Objects.hash(polarity, strength, subjectivity, sentimentSemanticType,
-                    sentimentProductFeature, span, externalReferences);
+            return Objects.hash(this.polarity, this.strength, this.subjectivity,
+                    this.sentimentSemanticType, this.sentimentProductFeature, this.span,
+                    this.externalReferences);
         }
 
         @Override
         public String toString() {
-            return "Expression " + polarity + ": " + span;
+            return "Expression " + this.polarity + ": " + this.span;
         }
-        
-	}
 
-	private String id;
-	private OpinionHolder opinionHolder;
-	private OpinionTarget opinionTarget;
-	private OpinionExpression opinionExpression;
-	private String label;
-	private List<ExternalRef> externalReferences;
+    }
 
-	public String getLabel() {
-		return label;
-	}
+    private String id;
+    private OpinionHolder opinionHolder;
+    private OpinionTarget opinionTarget;
+    private OpinionExpression opinionExpression;
+    private String label;
+    private final List<ExternalRef> externalReferences;
 
-	public void setLabel(String label) {
-		this.label = label;
-	}
+    public String getLabel() {
+        return this.label;
+    }
 
-	Opinion(String id) {
-		this.id = id;
-		this.externalReferences = new ArrayList<ExternalRef>();
-	}
+    public void setLabel(final String label) {
+        this.label = label;
+    }
 
-	Opinion(Opinion opinion, HashMap<String, Term> terms) {
-		this.id = opinion.id;
-		if (opinion.opinionHolder != null) {
-			this.opinionHolder = new OpinionHolder(opinion.opinionHolder, terms);
-		}
-		if (opinion.opinionTarget != null) {
-			this.opinionTarget = new OpinionTarget(opinion.opinionTarget, terms);
-		}
-		if (opinion.opinionExpression != null) {
-			this.opinionExpression = new OpinionExpression(opinion.opinionExpression, terms);
-		}
-		this.externalReferences = new ArrayList<ExternalRef>();
-	    for (ExternalRef externalRef : opinion.getExternalRefs()) {
-	        this.externalReferences.add(new ExternalRef(externalRef));
-	    }
-	}
+    Opinion(final String id) {
+        this.id = id;
+        this.externalReferences = new ArrayList<ExternalRef>();
+    }
 
-	public String getId() {
-		return this.id;
-	}
+    Opinion(final Opinion opinion, final HashMap<String, Term> terms) {
+        this.id = opinion.id;
+        if (opinion.opinionHolder != null) {
+            this.opinionHolder = new OpinionHolder(opinion.opinionHolder, terms);
+        }
+        if (opinion.opinionTarget != null) {
+            this.opinionTarget = new OpinionTarget(opinion.opinionTarget, terms);
+        }
+        if (opinion.opinionExpression != null) {
+            this.opinionExpression = new OpinionExpression(opinion.opinionExpression, terms);
+        }
+        this.externalReferences = new ArrayList<ExternalRef>();
+        for (final ExternalRef externalRef : opinion.getExternalRefs()) {
+            this.externalReferences.add(new ExternalRef(externalRef));
+        }
+    }
 
-	void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+        return this.id;
+    }
 
-	public OpinionHolder getOpinionHolder() {
-		return opinionHolder;
-	}
+    void setId(final String id) {
+        this.id = id;
+    }
 
-	public OpinionTarget getOpinionTarget() {
-		return opinionTarget;
-	}
+    public String getPolarity() {
+        return this.opinionExpression == null ? null : this.opinionExpression.getPolarity();
+    }
 
-	public OpinionExpression getOpinionExpression() {
-		return opinionExpression;
-	}
+    public void setPolarity(final String polarity) {
+        if (this.opinionExpression != null) {
+            this.opinionExpression.setPolarity(polarity);
+        } else if (polarity != null) {
+            this.opinionExpression = new Opinion.OpinionExpression(KAFDocument.newTermSpan());
+            this.opinionExpression.setPolarity(polarity);
+        }
+    }
 
-	public OpinionHolder createOpinionHolder(Span<Term> span) {
-		this.opinionHolder = new Opinion.OpinionHolder(span);
-		return this.opinionHolder;
-	}
+    public Span<Term> getExpressionSpan() {
+        return this.opinionExpression == null ? null : this.opinionExpression.getSpan();
+    }
 
-	public OpinionTarget createOpinionTarget(Span<Term> span) {
-		this.opinionTarget = new Opinion.OpinionTarget(span);
-		return this.opinionTarget;
-	}
+    public void setExpressionSpan(final Span<Term> expressionSpan) {
+        if (this.opinionExpression != null) {
+            this.opinionExpression.setSpan(expressionSpan != null ? expressionSpan //
+                    : KAFDocument.newTermSpan());
+        } else if (expressionSpan != null && !expressionSpan.isEmpty()) {
+            this.opinionExpression = new Opinion.OpinionExpression(expressionSpan);
+        }
+    }
 
-	public OpinionExpression createOpinionExpression(Span<Term> span) {
-		this.opinionExpression = new Opinion.OpinionExpression(span);
-		return this.opinionExpression;
-	}
-	
-	public OpinionHolder removeOpinionHolder() {
-	    OpinionHolder result = this.opinionHolder;
-	    this.opinionHolder = null;
-	    return result;
-	}
+    public Span<Term> getHolderSpan() {
+        return this.opinionHolder == null ? null : this.opinionHolder.getSpan();
+    }
+
+    public void setHolderSpan(final Span<Term> holderSpan) {
+        if (holderSpan == null || holderSpan.isEmpty()) {
+            this.opinionHolder = null;
+        } else if (this.opinionHolder == null) {
+            this.opinionHolder = new Opinion.OpinionHolder(holderSpan);
+        } else {
+            this.opinionHolder.setSpan(holderSpan);
+        }
+    }
+
+    public Span<Term> getTargetSpan() {
+        return this.opinionTarget == null ? null : this.opinionTarget.getSpan();
+    }
+
+    public void setTargetSpan(final Span<Term> targetSpan) {
+        if (targetSpan == null || targetSpan.isEmpty()) {
+            this.opinionTarget = null;
+        } else if (this.opinionTarget == null) {
+            this.opinionTarget = new Opinion.OpinionTarget(targetSpan);
+        } else {
+            this.opinionTarget.setSpan(targetSpan);
+        }
+    }
+
+    public OpinionHolder getOpinionHolder() {
+        return this.opinionHolder;
+    }
+
+    public OpinionTarget getOpinionTarget() {
+        return this.opinionTarget;
+    }
+
+    public OpinionExpression getOpinionExpression() {
+        return this.opinionExpression;
+    }
+
+    public OpinionHolder createOpinionHolder(final Span<Term> span) {
+        this.opinionHolder = new Opinion.OpinionHolder(span);
+        return this.opinionHolder;
+    }
+
+    public OpinionTarget createOpinionTarget(final Span<Term> span) {
+        this.opinionTarget = new Opinion.OpinionTarget(span);
+        return this.opinionTarget;
+    }
+
+    public OpinionExpression createOpinionExpression(final Span<Term> span) {
+        this.opinionExpression = new Opinion.OpinionExpression(span);
+        return this.opinionExpression;
+    }
+
+    public OpinionHolder removeOpinionHolder() {
+        final OpinionHolder result = this.opinionHolder;
+        this.opinionHolder = null;
+        return result;
+    }
 
     public OpinionTarget removeOpinionTarget() {
-        OpinionTarget result = this.opinionTarget;
+        final OpinionTarget result = this.opinionTarget;
         this.opinionTarget = null;
         return result;
     }
 
     public OpinionExpression removeOpinionExpression() {
-        OpinionExpression result = this.opinionExpression;
+        final OpinionExpression result = this.opinionExpression;
         this.opinionExpression = null;
         return result;
     }
 
-	public String getSpanStr(Span<Term> span) {
-		String str = "";
-		for (Term term : span.getTargets()) {
-			if (!str.isEmpty()) {
-				str += " ";
-			}
-			str += term.getStr();
-		}
-		return str;
-	}
+    public String getSpanStr(final Span<Term> span) {
+        String str = "";
+        for (final Term term : span.getTargets()) {
+            if (!str.isEmpty()) {
+                str += " ";
+            }
+            str += term.getStr();
+        }
+        return str;
+    }
 
-	public String getStr() {
-		return getSpanStr(this.getOpinionExpression().getSpan());
-	}
+    public String getStr() {
+        return getSpanStr(getOpinionExpression().getSpan());
+    }
 
-	public ExternalRef getExternalRef(String resource) {
-        for (ExternalRef ref : this.externalReferences) {
+    public ExternalRef getExternalRef(final String resource) {
+        for (final ExternalRef ref : this.externalReferences) {
             if (ref.getResource().equalsIgnoreCase(resource)) {
                 return ref;
             }
         }
         return null;
     }
-     
+
     public List<ExternalRef> getExternalRefs() {
         return this.externalReferences;
     }
-         
-    public void addExternalRef(ExternalRef externalRef) {
+
+    public void addExternalRef(final ExternalRef externalRef) {
         this.externalReferences.add(externalRef);
     }
 
-    public void addExternalRefs(List<ExternalRef> externalRefs) {
+    public void addExternalRefs(final List<ExternalRef> externalRefs) {
         this.externalReferences.addAll(externalRefs);
     }
-    
+
 }
