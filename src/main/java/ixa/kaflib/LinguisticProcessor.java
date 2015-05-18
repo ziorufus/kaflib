@@ -34,7 +34,7 @@ public class LinguisticProcessor implements Serializable {
 	public static String createTimestamp() {
 		Date date = new Date();
 		//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd H:mm:ss");
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 		String formattedDate = sdf.format(date);
 		return formattedDate;
 	}
