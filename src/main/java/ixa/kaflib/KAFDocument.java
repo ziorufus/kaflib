@@ -2027,7 +2027,7 @@ public class KAFDocument implements Serializable {
         }
         return root;
     }
-
+    
     public Set<Term> getTermsByDepAncestors(final Iterable<Term> ancestors) {
         final Set<Term> terms = new HashSet<Term>();
         final List<Term> queue = new LinkedList<Term>();
@@ -2120,6 +2120,21 @@ public class KAFDocument implements Serializable {
 
     public List<Timex3> getTimeExsByWF(final WF wf) {
         return this.annotationContainer.getTimeExsByWF(wf);
+    }
+
+    public List<Timex3> getTimeExsByTerm(final Term term) {
+        final List<Timex3> result = new ArrayList<>();
+        outer: for (final Timex3 timex : getTimeExs()) {
+            if (timex.getSpan() != null) {
+                for (final WF wf : timex.getSpan().getTargets()) {
+                    if (term.getWFs().contains(wf)) {
+                        result.add(timex);
+                        continue outer;
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     public List<Factuality> getFactualities() {

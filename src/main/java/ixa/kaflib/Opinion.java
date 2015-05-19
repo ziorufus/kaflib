@@ -6,16 +6,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import com.sun.istack.internal.Nullable;
+
 /**
  * Class for representing opinions.
  */
 public class Opinion implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -6971847529645535297L;
 
+    public enum Polarity {
+
+        NEUTRAL, POSITIVE, NEGATIVE;
+
+        public static Polarity forOpinion(final Opinion opinion) {
+            return forLabel(opinion == null || opinion.getOpinionExpression() == null ? null
+                    : opinion.getOpinionExpression().getPolarity());
+        }
+
+        public static Polarity forExpression(final OpinionExpression expression) {
+            return forLabel(expression == null ? null : expression.getPolarity());
+        }
+
+        public static Polarity forLabel(@Nullable final String string) {
+            if (string != null) {
+                final String s = string.toLowerCase();
+                if (s.contains("pos")) {
+                    return POSITIVE;
+                } else if (s.contains("neg")) {
+                    return NEGATIVE;
+                }
+            }
+            return NEUTRAL;
+        }
+
+    }
+    
     public static class OpinionHolder implements Serializable {
 
         /**
