@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import com.sun.istack.internal.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * Class for representing opinions.

@@ -12,6 +12,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <google-guava.version>17.0</google-guava.version>
+        <jsr305.version>2.0.3</jsr305.version>
   </properties>
 
   <dependencies>
@@ -27,6 +29,16 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${google-guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>${jsr305.version}</version>
+        </dependency>
   </dependencies>
 
   <build>

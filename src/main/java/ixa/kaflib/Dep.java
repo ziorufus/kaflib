@@ -81,8 +81,12 @@ public class Dep implements Serializable {
     public String getStr() {
 	return rfunc + "(" + this.getFrom().getStr() + ", " + this.getTo().getStr() + ")";
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return getStr();
+    }
+
     public static final class Path {
 
         private final List<Dep> deps;
