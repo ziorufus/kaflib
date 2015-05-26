@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.jdom2.Element;
@@ -1872,25 +1873,28 @@ public class KAFDocument implements Serializable {
 
     // ADDED BY FRANCESCO
 
-    private static final Map<String, Character> DEP_PATH_CHARS = new HashMap<String, Character>();
+    private static final Map<String, Character> DEP_PATH_CHARS = new ConcurrentHashMap<String, Character>();
 
-    private static final Map<String, Pattern> DEP_PATH_REGEXS = new HashMap<String, Pattern>();
+    private static final Map<String, Pattern> DEP_PATH_REGEXS = new ConcurrentHashMap<String, Pattern>();
 
     private static char getDepPathChar(final String label) {
         final String key = label.toLowerCase();
-        synchronized (DEP_PATH_CHARS) {
-            Character letter = DEP_PATH_CHARS.get(key);
-            if (letter == null) {
-                letter = 'a';
-                for (final Character ch : DEP_PATH_CHARS.values()) {
-                    if (ch >= letter) {
-                        letter = (char) (ch + 1);
+        Character letter = DEP_PATH_CHARS.get(key);
+        if (letter == null) {
+            synchronized (DEP_PATH_CHARS) {
+                letter = DEP_PATH_CHARS.get(key);
+                if (letter == null) {
+                    letter = 'a';
+                    for (final Character ch : DEP_PATH_CHARS.values()) {
+                        if (ch >= letter) {
+                            letter = (char) (ch + 1);
+                        }
                     }
+                    DEP_PATH_CHARS.put(key, letter);
                 }
-                DEP_PATH_CHARS.put(key, letter);
             }
-            return letter;
         }
+        return letter;
     }
 
     private static String getDepPathString(final Term from, final Iterable<Dep> path) {
@@ -1915,39 +1919,43 @@ public class KAFDocument implements Serializable {
     }
 
     private static Pattern getDepPathRegex(String pattern) {
-        synchronized (DEP_PATH_REGEXS) {
-            Pattern regex = DEP_PATH_REGEXS.get(pattern);
-            if (regex == null) {
-                final StringBuilder builder = new StringBuilder();
-                builder.append('_');
-                int start = -1;
-                pattern = pattern + " ";
-                for (int i = 0; i < pattern.length(); ++i) {
-                    final char ch = pattern.charAt(i);
-                    if (Character.isLetter(ch) || ch == '-') {
-                        if (start < 0) {
-                            start = i;
-                        }
-                    } else {
-                        if (start >= 0) {
-                            final boolean inverse = pattern.charAt(start) == '-';
-                            final String label = pattern.substring(inverse ? start + 1 : start, i);
-                            final char letter = getDepPathChar(label);
-                            builder.append("([^_]*")
-                                    .append(Pattern.quote((inverse ? "-" : "+") + letter))
-                                    .append("[^_]*_)");
-                            start = -1;
-                        }
-                        if (!Character.isWhitespace(ch)) {
-                            builder.append(ch);
+        Pattern regex = DEP_PATH_REGEXS.get(pattern);
+        if (regex == null) {
+            synchronized (DEP_PATH_REGEXS) {
+                regex = DEP_PATH_REGEXS.get(pattern);
+                if (regex == null) {
+                    final StringBuilder builder = new StringBuilder();
+                    builder.append('_');
+                    int start = -1;
+                    String pattern2 = pattern + " ";
+                    for (int i = 0; i < pattern2.length(); ++i) {
+                        final char ch = pattern2.charAt(i);
+                        if (Character.isLetter(ch) || ch == '-') {
+                            if (start < 0) {
+                                start = i;
+                            }
+                        } else {
+                            if (start >= 0) {
+                                final boolean inverse = pattern2.charAt(start) == '-';
+                                final String label = pattern2.substring(
+                                        inverse ? start + 1 : start, i);
+                                final char letter = getDepPathChar(label);
+                                builder.append("([^_]*")
+                                        .append(Pattern.quote((inverse ? "-" : "+") + letter))
+                                        .append("[^_]*_)");
+                                start = -1;
+                            }
+                            if (!Character.isWhitespace(ch)) {
+                                builder.append(ch);
+                            }
                         }
                     }
+                    regex = Pattern.compile(builder.toString());
+                    DEP_PATH_REGEXS.put(pattern, regex);
                 }
-                regex = Pattern.compile(builder.toString());
-                DEP_PATH_REGEXS.put(pattern, regex);
             }
-            return regex;
         }
+        return regex;
     }
 
     public boolean matchDepPath(final Term from, final Iterable<Dep> path, final String pattern) {
