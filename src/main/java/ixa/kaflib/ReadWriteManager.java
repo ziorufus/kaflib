@@ -812,67 +812,71 @@ class ReadWriteManager {
 				}
 			}
 			else if (elem.getName().equals("constituency")) {
-				List<Element> treeElems = elem.getChildren("tree");
-				for (Element treeElem : treeElems) {
-					HashMap<String, TreeNode> treeNodes = new HashMap<String, TreeNode>();
-					HashMap<String, Boolean> rootNodes = new HashMap<String, Boolean>();
-					Integer sentence = null;
-					if (treeElem.getAttribute("sentence") != null) {
-						sentence = Integer.parseInt(treeElem.getAttribute("sentence").getValue());
-					}
+				try {
+					List<Element> treeElems = elem.getChildren("tree");
+					for (Element treeElem : treeElems) {
+						HashMap<String, TreeNode> treeNodes = new HashMap<String, TreeNode>();
+						HashMap<String, Boolean> rootNodes = new HashMap<String, Boolean>();
+						Integer sentence = null;
+						if (treeElem.getAttribute("sentence") != null) {
+							sentence = Integer.parseInt(treeElem.getAttribute("sentence").getValue());
+						}
 
-					// Terminals
-					List<Element> terminalElems = treeElem.getChildren("t");
-					for (Element terminalElem : terminalElems) {
-						String id = getAttribute("id", terminalElem);
-						Element spanElem = terminalElem.getChild("span");
-						if (spanElem == null) {
-							throw new KAFNotValidException("Constituent non terminal nodes need a span");
+						// Terminals
+						List<Element> terminalElems = treeElem.getChildren("t");
+						for (Element terminalElem : terminalElems) {
+							String id = getAttribute("id", terminalElem);
+							Element spanElem = terminalElem.getChild("span");
+							if (spanElem == null) {
+								throw new KAFNotValidException("Constituent non terminal nodes need a span");
+							}
+							Span<Term> span = loadTermSpan(spanElem, termIndex, id);
+							treeNodes.put(id, kaf.newTerminal(id, span));
+							rootNodes.put(id, true);
 						}
-						Span<Term> span = loadTermSpan(spanElem, termIndex, id);
-						treeNodes.put(id, kaf.newTerminal(id, span));
-						rootNodes.put(id, true);
+						// NonTerminals
+						List<Element> nonTerminalElems = treeElem.getChildren("nt");
+						for (Element nonTerminalElem : nonTerminalElems) {
+							String id = getAttribute("id", nonTerminalElem);
+							String label = getAttribute("label", nonTerminalElem);
+							treeNodes.put(id, kaf.newNonTerminal(id, label));
+							rootNodes.put(id, true);
+						}
+						// Edges
+						List<Element> edgeElems = treeElem.getChildren("edge");
+						for (Element edgeElem : edgeElems) {
+							String fromId = getAttribute("from", edgeElem);
+							String toId = getAttribute("to", edgeElem);
+							String edgeId = getOptAttribute("id", edgeElem);
+							String head = getOptAttribute("head", edgeElem);
+							boolean isHead = (head != null && head.equals("yes")) ? true : false;
+							TreeNode parentNode = treeNodes.get(toId);
+							TreeNode childNode = treeNodes.get(fromId);
+							if ((parentNode == null) || (childNode == null)) {
+								throw new KAFNotValidException("There is a problem with the edge(" + fromId + ", " + toId + "). One of its targets doesn't exist.");
+							}
+							try {
+								((NonTerminal) parentNode).addChild(childNode);
+							} catch (Exception e) {
+							}
+							rootNodes.put(fromId, false);
+							if (edgeId != null) {
+								childNode.setEdgeId(edgeId);
+							}
+							if (isHead) {
+								((NonTerminal) childNode).setHead(isHead);
+							}
+						}
+						// Constituent objects
+						for (Map.Entry<String, Boolean> areRoot : rootNodes.entrySet()) {
+							if (areRoot.getValue()) {
+								TreeNode rootNode = treeNodes.get(areRoot.getKey());
+								kaf.newConstituent(rootNode, sentence);
+							}
+						}
 					}
-					// NonTerminals
-					List<Element> nonTerminalElems = treeElem.getChildren("nt");
-					for (Element nonTerminalElem : nonTerminalElems) {
-						String id = getAttribute("id", nonTerminalElem);
-						String label = getAttribute("label", nonTerminalElem);
-						treeNodes.put(id, kaf.newNonTerminal(id, label));
-						rootNodes.put(id, true);
-					}
-					// Edges
-					List<Element> edgeElems = treeElem.getChildren("edge");
-					for (Element edgeElem : edgeElems) {
-						String fromId = getAttribute("from", edgeElem);
-						String toId = getAttribute("to", edgeElem);
-						String edgeId = getOptAttribute("id", edgeElem);
-						String head = getOptAttribute("head", edgeElem);
-						boolean isHead = (head != null && head.equals("yes")) ? true : false;
-						TreeNode parentNode = treeNodes.get(toId);
-						TreeNode childNode = treeNodes.get(fromId);
-						if ((parentNode == null) || (childNode == null)) {
-							throw new KAFNotValidException("There is a problem with the edge(" + fromId + ", " + toId + "). One of its targets doesn't exist.");
-						}
-						try {
-							((NonTerminal) parentNode).addChild(childNode);
-						} catch (Exception e) {
-						}
-						rootNodes.put(fromId, false);
-						if (edgeId != null) {
-							childNode.setEdgeId(edgeId);
-						}
-						if (isHead) {
-							((NonTerminal) childNode).setHead(isHead);
-						}
-					}
-					// Constituent objects
-					for (Map.Entry<String, Boolean> areRoot : rootNodes.entrySet()) {
-						if (areRoot.getValue()) {
-							TreeNode rootNode = treeNodes.get(areRoot.getKey());
-							kaf.newConstituent(rootNode, sentence);
-						}
-					}
+				} catch (Exception e) {
+					// continue
 				}
 			}
 			else if (elem.getName().equals("factualitylayer")) {

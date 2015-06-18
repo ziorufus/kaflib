@@ -79,7 +79,9 @@ public class Dep implements Serializable {
     }
 
     public String getStr() {
-	return rfunc + "(" + this.getFrom().getStr() + ", " + this.getTo().getStr() + ")";
+        String idFrom = this.getFrom().getId().replaceAll("[^0-9]", "");
+        String idTo = this.getTo().getId().replaceAll("[^0-9]", "");
+        return String.format("%s(%s-%s, %s-%s)", rfunc, this.getFrom().getStr(), idFrom, this.getTo().getStr(), idTo);
     }
 
     @Override

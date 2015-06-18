@@ -124,7 +124,7 @@ public class KAFDocument implements Serializable {
         try {
             kaf = ReadWriteManager.load(stream);
         } catch (JDOMException e) {
-            e.printStackTrace();
+            throw new IOException(e);
         }
         return kaf;
     }
@@ -1084,7 +1084,7 @@ public class KAFDocument implements Serializable {
     public List<Opinion> getOpinions() {
         return annotationContainer.getOpinions();
     }
-    
+
     public List<Opinion> getOpinions(String label) {
         final List<Opinion> opinions = new ArrayList<Opinion>();
         for (final Opinion opinion : annotationContainer.getOpinions()) {
@@ -1799,10 +1799,10 @@ public class KAFDocument implements Serializable {
 
     public void removeAnnotations(Iterable<?> annotations) {
         for (Object annotation : annotations) {
-            this.annotationContainer.removeAnnotation(annotation);            
+            this.annotationContainer.removeAnnotation(annotation);
         }
     }
-    
+
     public void removeAnnotation(Object annotation) {
         this.annotationContainer.removeAnnotation(annotation);
     }
@@ -2035,7 +2035,7 @@ public class KAFDocument implements Serializable {
         }
         return root;
     }
-    
+
     public Set<Term> getTermsByDepAncestors(final Iterable<Term> ancestors) {
         final Set<Term> terms = new HashSet<Term>();
         final List<Term> queue = new LinkedList<Term>();
